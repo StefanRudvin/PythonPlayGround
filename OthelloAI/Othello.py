@@ -1,3 +1,4 @@
+
 import random
 import sys
 
@@ -11,10 +12,10 @@ def drawBoard(board):
     print(HLINE)
     for y in range(8):
         print(VLINE)
-        print(y+1,end=' ')
+        print(y+1, end=' ')
         for x in range(8):
             print('| %s' % (board[x][y]), end=' ')
-        print('l')
+        print('|')
         print(VLINE)
         print(HLINE)
 
@@ -22,12 +23,12 @@ def resetBoard(board):
     #Blanks out the board it is bassed, except for starting position
     for x in range(8):
         for y in range(8):
-            board[x][y] = ''
+            board[x][y] = ' '
 
     #Starting Places
     board[3][3] = 'X'
-    board[3][4] = '0'
-    board[4][3] = '0'
+    board[3][4] = 'O'
+    board[4][3] = 'O'
     board[4][4] = 'X'
 
 def getNewBoard():
@@ -35,7 +36,10 @@ def getNewBoard():
     board= []
     for i in range(8):
         board.append(['']*8)
+
     return board
+
+
 
 def isValidMove(board,tile,xstart,ystart):
     #return false if player's move on space xstart, ystart is invalid
@@ -52,7 +56,7 @@ def isValidMove(board,tile,xstart,ystart):
         otherTile = 'X'
 
     tilesToFlip = []
-    for xdirection,ydirection in [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1][-1,0],[-1,1]]:
+    for xdirection, ydirection in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
         x,y = xstart,ystart
         x += xdirection #first step in the direction
         y += ydirection #first step in the direction
@@ -72,7 +76,7 @@ def isValidMove(board,tile,xstart,ystart):
             if board[x][y] == tile:
                 #There are pieces to flip over. Go in the reverse direction until we reach the original space, nothing all the tiles along the way
                 while True:
-                    x-= xdirection
+                    x -= xdirection
                     y -= ydirection
                     if x == xstart and y == ystart:
                         break
@@ -99,7 +103,7 @@ def getValidMoves(board,tile):
     #return list of [x,y] lists of valid moves
     validMoves = []
 
-    for x in range(8):
+    for x in rangegge(8):
         for y in range(8):
             if isValidMove(board,tile,x,y) != False:
                 validMoves.append([x,y])
