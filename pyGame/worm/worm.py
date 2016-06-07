@@ -339,14 +339,14 @@ def drawWorm(wormCoords):
 def drawApple(coord):
     x = coord['x'] * CELLSIZE
     y = coord['y'] * CELLSIZE
-    appleRect = pygame.Rect(x,y,CELLSIZE,CELLSIZE)
-    pygame.draw.rect(DISPLAYSURF,RED,appleRect)
+    appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, RED, appleRect)
 
 def drawwallapple(coord):
     x = coord['x'] * CELLSIZE
     y = coord['y'] * CELLSIZE
-    appleRect = pygame.Rect(x,y,CELLSIZE,CELLSIZE)
-    pygame.draw.rect(DISPLAYSURF,BLUE,appleRect)
+    appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, BLUE, appleRect)
 
 def drawfastApple(coord):
     x = coord['x'] * CELLSIZE
