@@ -1,0 +1,25 @@
+;
+
+; o = point
+; ‘ = super point
+###################
+#zoo.oooo#oooooooz#
+#o##o###o#o###o##o#
+#o@ooooooooooooooo#
+#o##o#o#####o#o##o#
+#oooo#ooo#ooo#oooo#
+####o###o#o###o####
+   #o#ooooooo#o#
+####o#o## ##o#o####
+ooooooo# 1 #ooooooo
+####$#o#####o#o####
+   #o#ooooooo#o#
+####o#o#####o#o####
+#oooooooo#oooooooo#
+#o##o###o#o###o##o#
+#oo#ooooooooooo#oo#
+##o#o#o#####o#o#o##
+#oooo#ooo#ooo#oooo#
+#o######o#o######o#
+#zoooooooooooooooz#
+###################

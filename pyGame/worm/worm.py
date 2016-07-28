@@ -5,7 +5,7 @@ import random, pygame, sys
 import shelve
 from pygame.locals import *
 
-FPS = 50
+FPS = 25
 WINDOWWIDTH = 860
 WINDOWHEIGHT = 480
 CELLSIZE = 20
@@ -29,7 +29,6 @@ LEFT = 'left'
 RIGHT = 'right'
 
 HEAD = 0 #INdex of worm's HEAD
-
 
 def main(FPS):
     global FPSCLOCK, DISPLAYSURF, BASICFONT
