@@ -204,3 +204,28 @@ Different levels for different algorithms? Like select a for that. That would be
 - Locations (x,y) tuples which labels locations on the graph.
 - Search: algorithm that takes starting position, optional goal location, and calculates visited, parent pointer, distance for some or all locations.
 - Queue: data structure used by algorithm to determine the order in which to process locations.
+
+
+------------ Moving the ghost ------------------
+
+The player is moved by the keys. Directions move the player e.g(0,1) in the list.
+
+For the Ghost to move:
+1. AI calculates path to pacman from current location, checking for walls and other ghosts.
+2. Returns the next move and moves Ghost there.
+3. Loops 1 and 2 until the ghost finds pacman.
+
+Just a big damn function that gets the next move and moves the ghost.
+
+Moving works!
+
+Tavoite:
+Print all neighbouring tiles of ghost. Or player.
+
+
+WHAT TO DO:
+1. Every cycle find player position.
+2. Find the path of 0 and 1, available spots to move to.
+2. Find the route to the player (next tile to moveTo)
+3. Move ghost to that tile.
+4. Rinse & Repeat!

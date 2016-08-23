@@ -4,7 +4,7 @@
 
 # Modified to make a Pacman Clone by Stefan Rudvin 2016
 
-import random, sys, copy, os, pygame, ghost
+import random, sys, copy, os, pygame
 from pygame.locals import *
 
 FPS = 30 # frames per second to update the screen
@@ -35,8 +35,9 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
+
 def main():
-    global FPSCLOCK, DISPLAYSURF, IMAGESDICT, TILEMAPPING, OUTSIDEDECOMAPPING, BASICFONT, PLAYERIMAGES, currentImage, loseLife, superMode
+    global FPSCLOCK, DISPLAYSURF, IMAGESDICT, TILEMAPPING, OUTSIDEDECOMAPPING, BASICFONT, PLAYERIMAGES, currentImage
 
     # Pygame initialization and basic set up of the global variables.
     pygame.init()
@@ -99,17 +100,13 @@ def main():
     # details on the format of this file and how to make your own levels.
     levels = readLevelsFile('starPusherLevels.txt')
     currentLevelIndex = 0
-    currentLife = 2
-    loseLife = False
-    superMode = False
+    currentLife = 3
 
     # The main game loop. This loop runs a single level, when the user
     # finishes that level, the next/previous level is loaded.
     while True: # main game loop
         # Run the level to actually start playing the game:
         result = runLevel(levels, currentLevelIndex)
-
-        print("result is: " + result)
 
         if result in ('solved', 'next'):
             # Go to the next level.
@@ -125,24 +122,20 @@ def main():
                 currentLevelIndex = len(levels)-1
         elif result == 'reset':
             pass # Do nothing. Loop re-calls runLevel() to reset the level
-        elif result == 'lifeLost':
+        elif result == 'loseLife':
             currentLife -= 1
-            loseLife = False
-            print("Lives left: "+ str(currentLife + 1))
             if currentLife < 0:
                 print("0 life, make a new screen for this. Wait for press and continue.")
                 startScreen()
                 currentLevelIndex = 0
-                currentLife = 2
+                currentLife = 3
             else:
                 pass
 
 def runLevel(levels, levelNum):
-    global currentImage,superMode, gameStateObj
+    global currentImage
     levelObj = levels[levelNum] # Levelobj = the current level
-    #print(levelObj)
     mapObj = decorateMap(levelObj['mapObj'], levelObj['startState']['player'])
-
     gameStateObj = copy.deepcopy(levelObj['startState'])
     mapNeedsRedraw = True # set to True to call drawMap()
     levelSurf = BASICFONT.render('Level %s of %s' % (levelNum + 1, len(levels)), 1, TEXTCOLOR)
@@ -150,10 +143,10 @@ def runLevel(levels, levelNum):
     levelRect.bottomleft = (20, WINHEIGHT - 35)
     mapWidth = len(mapObj) * TILEWIDTH
     mapHeight = (len(mapObj[0]) - 1) * TILEFLOORHEIGHT + TILEHEIGHT
+
+    loseLife = False
     levelIsComplete = False
     #playerMoveTo = None
-
-    timer = 10
 
     while True: # main game loop
         # Reset these variables:
@@ -203,9 +196,6 @@ def runLevel(levels, levelNum):
                 # increment the step counter.
                 gameStateObj['stepCounter'] += 1
                 mapNeedsRedraw = True
-                #superMode = checkForPoints(levelObj, gameStateObj)
-                gameStateObj = checkForPoints(levelObj,gameStateObj)
-                superMode = checkForSuperPoints(levelObj, gameStateObj)
 
             if isLevelFinished(levelObj, gameStateObj):
                 # level is solved, we should show the "Solved!" image.
@@ -214,19 +204,8 @@ def runLevel(levels, levelNum):
 
         DISPLAYSURF.fill(BGCOLOR)
 
-        if superMode:
-            print("Super mode activated!")
-            superMode = False
-
-        timer -= 1
-
-        if timer == 0:
-            gameStateObj['ghosts'][0] = ghost.makeGhostMove(mapObj, gameStateObj)
-            timer = 10
-            mapNeedsRedraw = True
-
         if mapNeedsRedraw:
-            mapSurf = drawMap(mapObj, gameStateObj, levelObj['goals'])
+            mapSurf = drawMap(mapObj, gameStateObj, levelObj['goals'], levelObj['ghosts'])
             mapNeedsRedraw = False
 
         # Adjust mapSurf's Rect object based on the camera offset.
@@ -242,7 +221,7 @@ def runLevel(levels, levelNum):
         stepRect.bottomleft = (20, WINHEIGHT - 10)
         DISPLAYSURF.blit(stepSurf, stepRect)
 
-        if levelIsComplete or arePointsFinished(gameStateObj):
+        if levelIsComplete:
             # is solved, show the "Solved!" image until the player
             # has pressed a key.
             solvedRect = IMAGESDICT['solved'].get_rect()
@@ -253,24 +232,33 @@ def runLevel(levels, levelNum):
                 return 'solved'
 
         if loseLife:
+            print("Life Lost!")
             # Touched a ghost, lose a life
             solvedRect = IMAGESDICT['solved'].get_rect()
             solvedRect.center = (HALF_WINWIDTH, HALF_WINHEIGHT)
             DISPLAYSURF.blit(IMAGESDICT['solved'], solvedRect)
 
             if keyPressed:
-                return 'lifeLost'
+                return 'loseLife'
 
         pygame.display.update() # draw DISPLAYSURF to the screen.
         FPSCLOCK.tick()
 
-def isWall(mapObj, x, y):
+
+def isWall(mapObj, x, y, gameStateObj="None"):
     """Returns True if the (x, y) position on
     the map is a wall, otherwise return False."""
     if x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
+        print("OUT OF MAP")
         return False # x and y aren't actually on the map.
     elif mapObj[x][y] in ('#', 'x'):
         return True # wall is blocking
+    elif not gameStateObj == "None":
+        print("FUCK ME")
+        if (x, y) in gameStateObj['ghosts']:
+            print("FUCK")
+            loseLife = True
+            return True
     return False
 
 def decorateMap(mapObj, startxy):
@@ -312,49 +300,23 @@ def decorateMap(mapObj, startxy):
 
     return mapObjCopy
 
-def checkForPoints(levelObj,gameObj):
-    playerx, playery = gameObj['player']
-    points = gameObj['points']
 
-    for i, (x, y) in enumerate(points[:]):
-        if  playerx == x:
-            if playery == y:
-                z = (x,y)
-                points.remove(z)
-                #points[i] == (0,0)
-                #del points[i]
-                print("Star removed")
-    return gameObj
 
-def checkForSuperPoints(levelObj,gameObj):
-    playerx, playery = gameObj['player']
-    superPoints = gameObj['superPoints']
-
-    for i, (x, y) in enumerate(superPoints[:]):
-        if  playerx == x:
-            if playery == y:
-                z = (x,y)
-                superPoints.remove(z)
-                #points[i] == (0,0)
-                #del points[i]
-                print("Superstar removed")
-                return True
-
-def isGhost(x,y,gameStateObj):
-    global loseLife
+def isGhost(gameStateObj, x, y):
     """Returns True if the (x, y) position on the map is
-    blocked by a wall or star, otherwise return False."""
+    occupied by a spooky ghost."""
 
     if (x, y) in gameStateObj['ghosts']:
-        print("FUCKING GHOST")
-        loseLife = True
-        return True
+        print("Ghost is blocking the path")
+        return True # a star is blocking
+
+    return False
 
 def isBlocked(mapObj, gameStateObj, x, y):
     """Returns True if the (x, y) position on the map is
     blocked by a wall or star, otherwise return False."""
 
-    if isWall(mapObj, x, y):
+    if isWall(mapObj, x, y, gameStateObj):
         return True
 
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
@@ -362,10 +324,6 @@ def isBlocked(mapObj, gameStateObj, x, y):
 
     elif (x, y) in gameStateObj['stars']:
         print("Star is blocking the path")
-        return True # a star is blocking
-
-    elif (x, y) in gameStateObj['ghosts']:
-        print("Ghost is blocking the path")
         return True # a star is blocking
 
     return False
@@ -400,15 +358,14 @@ def makeMove(mapObj, gameStateObj, playerMoveTo):
         xOffset = -1
         yOffset = 0
 
-    if isGhost(playerx + xOffset, playery + yOffset, gameStateObj):
-        print("isGhost complete")
-        pass
-
     # See if the player can move in that direction.
     if isWall(mapObj, playerx + xOffset, playery + yOffset):
-        print("WALL BITCH")
+        print("WALL")
         return False
-    else:
+    elif isGhost(m playerx, playery, gameStateObj):
+        print("GET FUCKED MATE")
+        return False
+    elif:
         if (playerx + xOffset, playery + yOffset) in stars:
             # There is a star in the way, see if the player can push it.
             if not isBlocked(mapObj, gameStateObj, playerx + (xOffset*2), playery + (yOffset*2)):
@@ -418,13 +375,9 @@ def makeMove(mapObj, gameStateObj, playerMoveTo):
             else:
                 return False
         # Move the player upwards.
-        if (playerx + xOffset) == -1:
-            playerx = 19
-        if (playerx + xOffset) == 19:
-            playerx = -1
         gameStateObj['player'] = (playerx + xOffset, playery + yOffset)
-
         return True
+
 
 def startScreen():
     """Display the start screen (which has the title and instructions)
@@ -473,6 +426,7 @@ def startScreen():
         # Display the DISPLAYSURF contents to the actual screen.
         pygame.display.update()
         FPSCLOCK.tick()
+
 
 def readLevelsFile(filename):
     assert os.path.exists(filename), 'Cannot find the level file: %s' % (filename)
@@ -524,8 +478,6 @@ def readLevelsFile(filename):
             goals = [] # list of (x, y) tuples for each goal.
             stars = [] # list of (x, y) for each star's starting position.
             ghosts = [] # list of (x,y) for ghosts starting positions.
-            points = []
-            superPoints = []
             for x in range(maxWidth):
                 for y in range(len(mapObj[x])):
                     if mapObj[x][y] in ('@', '+'):
@@ -541,15 +493,6 @@ def readLevelsFile(filename):
                     if mapObj[x][y] in ('1'):
                         print("Ghost 1 added")
                         ghosts.append((x,y))
-                        ghostx = x
-                        ghosty = y
-                    if mapObj[x][y] in ('o'):
-                        points.append((x,y))
-                        mapObj[x][y] = ' '
-                    if mapObj[x][y] in ('z'):
-                        superPoints.append((x,y))
-                        mapObj[x][y] = ' '
-
 
             # Basic level design sanity checks:
             assert startx != None and starty != None, 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' % (levelNum+1, lineNum, filename)
@@ -560,16 +503,13 @@ def readLevelsFile(filename):
             gameStateObj = {'player': (startx, starty),
                             'stepCounter': 0,
                             'stars': stars,
-                            'ghosts': ghosts,
-                            'points': points,
-                            'superPoints': superPoints}
+                            'ghosts': ghosts}
             levelObj = {'width': maxWidth,
                         'height': len(mapObj),
                         'mapObj': mapObj,
                         'goals': goals,
-                        'startState': gameStateObj,
-                        'points': points,
-                        'superPoints': superPoints}
+                        'ghosts': ghosts,
+                        'startState': gameStateObj}
 
             levels.append(levelObj)
 
@@ -579,6 +519,7 @@ def readLevelsFile(filename):
             gameStateObj = {}
             levelNum += 1
     return levels
+
 
 def floodFill(mapObj, x, y, oldCharacter, newCharacter):
     """Changes any values matching oldCharacter on the map object to
@@ -601,7 +542,8 @@ def floodFill(mapObj, x, y, oldCharacter, newCharacter):
     if y > 0 and mapObj[x][y-1] == oldCharacter:
         floodFill(mapObj, x, y-1, oldCharacter, newCharacter) # call up
 
-def drawMap(mapObj, gameStateObj, goals):
+
+def drawMap(mapObj, gameStateObj, goals, ghosts):
     """Draws the map to a Surface object, including the player and
     stars. This function does not call pygame.display.update(), nor
     does it draw the "Level" and "Steps" text in the corner."""
@@ -638,14 +580,8 @@ def drawMap(mapObj, gameStateObj, goals):
             elif (x, y) in goals:
                 # Draw a goal without a star on it.
                 mapSurf.blit(IMAGESDICT['uncovered goal'], spaceRect)
-            elif (x, y) in gameStateObj['ghosts']:
+            elif (x, y) in ghosts:
                 # Draw ghost:
-                mapSurf.blit(IMAGESDICT['ghostred'], spaceRect)
-            elif (x, y) in gameStateObj['points']:
-                # Draw a goal without a star on it.
-                mapSurf.blit(IMAGESDICT['star'], spaceRect)
-            elif (x, y) in gameStateObj['superPoints']:
-                # Draw a goal without a star on it.
                 mapSurf.blit(IMAGESDICT['ghostred'], spaceRect)
 
             # Last draw the player on the board.
@@ -657,6 +593,7 @@ def drawMap(mapObj, gameStateObj, goals):
 
     return mapSurf
 
+
 def isLevelFinished(levelObj, gameStateObj):
     """Returns True if all the goals have stars in them."""
     for goal in levelObj['goals']:
@@ -665,21 +602,11 @@ def isLevelFinished(levelObj, gameStateObj):
             return False
     return True
 
-def arePointsFinished(gameStateObj):
-    """Returns True if all the goals have stars in them."""
-    number = 0
-    for point in gameStateObj['points']:
-        number += 1
-    for point in gameStateObj['superPoints']:
-        number += 1
-    if number < 1:
-        return True
-    else:
-        return False
 
 def terminate():
     pygame.quit()
     sys.exit()
+
 
 if __name__ == '__main__':
     main()

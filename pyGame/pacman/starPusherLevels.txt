@@ -1,7 +1,7 @@
 ;
 
 ; o = point
-; ‘ = super point
+; z = super point
 ###################
 #zoo.oooo#oooooooz#
 #o##o###o#o###o##o#
