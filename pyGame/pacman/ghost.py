@@ -18,41 +18,35 @@ def makeGhostMove(mapObject, gameObj):
     graph = mapObject
     start = (ghostx,ghosty)
     neighbors = isNeighbour(start,graph)
-    #gameObj['ghosts'][0] = neighbors[0]
-    #gameObj['ghosts'][0] = (neighbors[0][0],neighbors[0][1])
 
-    #a_star_search(graph,(ghostx,ghosty),(playerx,playery))
-    return neighbors[0]
+    #print("Ghost position: ",gameObj["ghosts"],"Next position: ",a_star_search(graph,(ghostx,ghosty),(playerx,playery)))
 
+    #print(isNeighbour(gameObj['ghosts'][0],graph))
+    return mySearch(graph,(ghostx,ghosty),(playerx,playery))
 
-def isNeighbour(node, mapObj):
-    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    result = []
-    for dir in dirs:
-        neighbor = [node[0] + dir[0], node[1] + dir[1]]
-        if not isWall(mapObj,neighbor[0],neighbor[1]):
-            result.append(neighbor)
+    '''
+    A star takes in: neighbours, playerx, playery, ghostx, ghosy AND mapObject.
 
-    return result
+    It must:
 
+    1. Look at the possible neighbours
+    2. Select the neighbouring that is (x,y) closest to playerx, playery.
+    '''
 
-def neighbors(node):
-    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    result = []
-    for dir in dirs:
-        neighbor = [node[0] + dir[0], node[1] + dir[1]]
-        if neighbor in all_nodes:
-            result.append(neighbor)
-    return result
+    # Return the next step to move to.
+    #return neighbors[0]
 
-# Heuristics function takes 2 tuples of inputs, finds the heuristic distance between them.
-def heuristic(a, b):
-    (x1, y1) = a
-    (x2, y2) = b
-    return abs(x1 - x2) + abs(y1 - y2)
+def mySearch(graph,ghost,goal):
 
-def cost(currentplace,next):
-    return 10
+    # Cycle through neighbours
+    # Find which one is closest to
+
+    points = heuristic(goal,ghost)
+
+    for (x,y) in isNeighbour(ghost,graph):
+        if heuristic(goal,(x,y)) < points:
+            return (x,y)
+
 
 def a_star_search(graph, start, goal):
     frontier = PriorityQueue()
@@ -68,15 +62,40 @@ def a_star_search(graph, start, goal):
         if current == goal:
             break # Found the goal
 
-        for next in isNeighbour(current,graph):
-            new_cost = cost_so_far[current] + cost(current, next)
-            if next not in cost_so_far or new_cost < cost_so_far[next]:
-                cost_so_far[next] = new_cost
-                priority = new_cost + heuristic(goal, next)
-                frontier.put(next, priority)
-                came_from[next] = current
+        for (x,y) in isNeighbour(current,graph):
+            new_cost = cost_so_far[current] + cost(current, (x,y))
 
-    return came_from, cost_so_far
+            if (x,y) not in cost_so_far or new_cost < cost_so_far[x,y]:
+                # If next (x,y) that isNeighbours provides is not in the dictionary of (x,y + cost) of past locations
+                # OR
+                # The newcost
+                cost_so_far[x,y] = new_cost
+                priority = new_cost + heuristic(goal, (x,y))
+                frontier.put((x,y), priority)
+                came_from[x,y] = current
+
+    #return came_from, cost_so_far
+    return frontier.get()
+
+
+def isNeighbour(node, mapObj):
+    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    result = []
+    for dir in dirs:
+        neighbor = [node[0] + dir[0],node[1] + dir[1]]
+        if not isWall(mapObj,neighbor[0],neighbor[1]):
+            result.append(neighbor)
+
+    return result
+
+# Heuristics function takes 2 tuples of inputs, finds the heuristic distance between them.
+def heuristic(a, b):
+    (x1, y1) = a
+    (x2, y2) = b
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def cost(currentplace,next):
+    return 10
 
 class PriorityQueue:
     def __init__(self):

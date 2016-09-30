@@ -71,7 +71,7 @@ def main():
                   'short tree': pygame.image.load('Tree_Short.png'),
                   'tall tree': pygame.image.load('Tree_Tall.png'),
                   'ugly tree': pygame.image.load('Tree_Ugly.png'),
-                  'ghostred': pygame.image.load('Rock.png')}
+                  'ghostred': pygame.image.load('pinkgirl.png')}
 
     # These dict values are global, and map the character that appears
     # in the level file to the Surface object it represents.
@@ -222,7 +222,9 @@ def runLevel(levels, levelNum):
 
         if timer == 0:
             gameStateObj['ghosts'][0] = ghost.makeGhostMove(mapObj, gameStateObj)
-            timer = 10
+            timer = 40
+            #print("ghost position: " , gameStateObj['ghosts'][0])
+            #print("player postition: " , gameStateObj['player'])
             mapNeedsRedraw = True
 
         if mapNeedsRedraw:
@@ -323,7 +325,7 @@ def checkForPoints(levelObj,gameObj):
                 points.remove(z)
                 #points[i] == (0,0)
                 #del points[i]
-                print("Star removed")
+                #print("Star removed")
     return gameObj
 
 def checkForSuperPoints(levelObj,gameObj):
@@ -345,7 +347,10 @@ def isGhost(x,y,gameStateObj):
     """Returns True if the (x, y) position on the map is
     blocked by a wall or star, otherwise return False."""
 
-    if (x, y) in gameStateObj['ghosts']:
+    ghostx = gameStateObj['ghosts'][0][1]
+    ghosty = gameStateObj['ghosts'][0][1]
+
+    if (x, y) == (ghostx,ghosty):
         print("FUCKING GHOST")
         loseLife = True
         return True
@@ -614,6 +619,8 @@ def drawMap(mapObj, gameStateObj, goals):
     mapSurf = pygame.Surface((mapSurfWidth, mapSurfHeight))
     mapSurf.fill(BGCOLOR) # start with a blank color on the surface.
 
+    #print("drawmap ghost position: ", gameStateObj['ghosts'][0])
+
     # Draw the tile sprites onto this surface.
     for x in range(len(mapObj)):
         for y in range(len(mapObj[x])):
@@ -638,9 +645,6 @@ def drawMap(mapObj, gameStateObj, goals):
             elif (x, y) in goals:
                 # Draw a goal without a star on it.
                 mapSurf.blit(IMAGESDICT['uncovered goal'], spaceRect)
-            elif (x, y) in gameStateObj['ghosts']:
-                # Draw ghost:
-                mapSurf.blit(IMAGESDICT['ghostred'], spaceRect)
             elif (x, y) in gameStateObj['points']:
                 # Draw a goal without a star on it.
                 mapSurf.blit(IMAGESDICT['star'], spaceRect)
@@ -654,6 +658,13 @@ def drawMap(mapObj, gameStateObj, goals):
                 # to a key in "PLAYERIMAGES" which has the
                 # specific player image we want to show.
                 mapSurf.blit(PLAYERIMAGES[currentImage], spaceRect)
+
+            redx = gameStateObj['ghosts'][0][0]
+            redy = gameStateObj['ghosts'][0][1]
+
+            if (x,y) == (redx,redy):
+                # Draw ghost:
+                mapSurf.blit(IMAGESDICT['ghostred'], spaceRect)
 
     return mapSurf
 
