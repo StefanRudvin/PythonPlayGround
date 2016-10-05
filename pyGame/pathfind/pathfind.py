@@ -37,9 +37,9 @@ BLUE = (0,51,102)
 BGCOLOR = BLACK
 
 def main():
+    global FPSCLOCK, DISPLAYSURF, BASICFONT
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    #pygame.image.load("/Dropbox/Code/Python/pyGame/pathfind/assets/ghost.png")
     #ghost = pygame.image.load('ghost.png')
     #print(ghostai.myvariable)
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH,WINHEIGHT))
@@ -47,6 +47,14 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf',18)
 
     showStartScreen(DISPLAYSURF,BASICFONT,FPSCLOCK,BGCOLOR)
+
+    while True:
+        runGame(FPS)
+        showGameOverScreen()
+
+def runGame(FPS):
+    pass
+
 
 if __name__ == '__main__':
     main()
