@@ -32,10 +32,13 @@ def showStartScreen(DISPLAYSURF,BASICFONT,FPSCLOCK,BGCOLOR):
 
         drawText("Press any key to play", DISPLAYSURF,BASICFONT,BGCOLOR,"topLeft",300)
         #Make function for keypress HERE
-        checkforKeyPress()
 
-        FPSCLOCK.tick(FPS)
+        if checkforKeyPress():
+            pygame.event.get()
+            return
         pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
 
 #Combine Surf and rect funcs
 def drawText(String,DISPLAYSURF,BASICFONT,BGCOLOR,position,padding):

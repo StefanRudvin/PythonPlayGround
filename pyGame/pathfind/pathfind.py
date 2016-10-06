@@ -10,12 +10,11 @@ WINWIDTH = 1000
 WINHEIGHT = 800
 CELLSIZE = 20
 
-#Total width and height of each tile in pixels
-TILEWIDTH = 50
-TILEHEIGHT = 50
-
 HALF_WINWIDTH = int(WINWIDTH / 2)
 HALF_WINHEIGHT = int(WINHEIGHT / 2)
+
+CELLWIDTH = int(WINWIDTH/CELLSIZE)
+CELLHEIGHT = int(WINHEIGHT/CELLSIZE)
 
 assert WINWIDTH % CELLSIZE == 0, "Window width must be a multiple of cell size."
 assert WINHEIGHT % CELLSIZE == 0, "Window height must be a multiple of cell size."
@@ -46,14 +45,36 @@ def main():
     pygame.display.set_caption('Pathfinder')
     BASICFONT = pygame.font.Font('freesansbold.ttf',18)
 
-    showStartScreen(DISPLAYSURF,BASICFONT,FPSCLOCK,BGCOLOR)
+    pygame.draw.line(DISPLAYSURF,BLACK,(20,0),(20,WINHEIGHT))
+
+    pygame.display.update()
+
+    print("Width cell size: ", WINWIDTH/CELLSIZE)
+    print("Height cell size: ", WINHEIGHT/CELLSIZE)
+
+    #while True:
+    #    drawGrid()
+
+    #showStartScreen(DISPLAYSURF,BASICFONT,FPSCLOCK,BGCOLOR)
 
     while True:
         runGame(FPS)
-        showGameOverScreen()
+        #showGameOverScreen()
 
+#Main game loop
 def runGame(FPS):
-    pass
+    #Set start points for player and AI
+    startx = random.randint(5, CELLWIDTH - 6)
+
+    while True:
+        drawGrid()
+
+def drawGrid():
+    for x in range(0, WINWIDTH,CELLSIZE): #Draw vertical lines
+        pygame.draw.line(DISPLAYSURF,BLACK,(x,0),(x,WINHEIGHT))
+
+    for y in range(0,WINHEIGHT,CELLSIZE): #Draw horizontal lines
+        pygame.draw.line(DISPLAYSURF,WHITE,(0,y),(WINWIDTH,y))
 
 
 if __name__ == '__main__':
