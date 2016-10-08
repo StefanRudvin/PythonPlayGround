@@ -19,8 +19,8 @@ LEFT = 'LEFT'
 RIGHT = 'RIGHT'
 
 FPS = 30
-WINDOWWIDTH = 640
-WINDOWHEIGHT = 480
+WINDOWWIDTH = 1200
+WINDOWHEIGHT = 800
 CELLSIZE = 20
 
 # Make list of empty lists
@@ -39,9 +39,12 @@ def main(FPS):
     showStartScreen()
     #Make Game() loop
     while True:
-        while lives > 0:
-            runGame(FPS,lives)
-        showGameOverScreen()
+
+        if not runGame(FPS,lives):
+            lives -= 1
+            print(lives)
+        if lives == 0:
+            showGameOverScreen()
 
 def runGame(FPS,lives):
 
@@ -103,6 +106,9 @@ def runGame(FPS,lives):
         #Returns "DOWN", "UP", etc
         AIDIRECTION = heuristics(*playerPos,*aiPos)
 
+        if Lost(*playerPos,*aiPos):
+            return False
+
         aiNextPos = moveAi(*aiPos,AIDIRECTION)
 
         if not isBlocked(*aiNextPos,wall):
@@ -123,15 +129,15 @@ def runGame(FPS,lives):
             else:
                 pass
 
-        #Draw player
-        drawRect(*convertToPixel(*playerPos),RED)
-
         #Draw aiTrail
         for i, (x,y) in enumerate(aiTrail):
             drawRect(*convertToPixel(*aiTrail[i]), DARKGRAY)
 
         #Draw AI
         drawRect(*convertToPixel(*aiPos), GREEN)
+
+        #Draw player
+        drawRect(*convertToPixel(*playerPos),RED)
 
         #Draw wall
         for i, (x,y) in enumerate(wall):
@@ -140,13 +146,23 @@ def runGame(FPS,lives):
         drawGrid()
 
         #Draw aiMoves
-        message_display_ll('aiMoves: ' + str(aiMoves))
+        message_display_lr('aiMoves: ' + str(aiMoves))
 
-        if aiPos == playerPos:
-            lives -= 1
-            print(lives)
+        message_display_ll('Lives left: ' + str(lives))
+
+        #if aiPos == playerPos:
+        #    lives -= 1
+        #    print(lives)
+
         pygame.display.update()
         FPSCLOCK.tick(FPS)
+
+def Lost(playerx,playery,aix,aiy):
+    xdistance = abs(playerx-aix)
+    ydistance = abs(playery-aiy)
+    if xdistance == 0:
+        if ydistance == 0:
+            return True
 
 def showStartScreen():
 
@@ -169,6 +185,17 @@ def showStartScreen():
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+def showGameOverScreen():
+    while True:
+        DISPLAY.fill(BLACK)
+        message_display("GAME OVER")
+        drawPressKeyMsg()
+        if checkforKeyPress():
+            pygame.event.get() #clear event queue
+            return
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
 def drawPressKeyMsg():
     pressKeySurf = BASICFONT.render('Press a key to play.',True,WHITE)
     pressKeyRect = pressKeySurf.get_rect()
@@ -185,10 +212,6 @@ def checkforKeyPress():
     if keyUpEvents[0].key == K_ESCAPE:
         terminate()
     return keyUpEvents[0].key
-
-def showGameOverScreen():
-    while True:
-        DISPLAY.fill(BLACK)
 
 def drawRect(x,y,colour):
     pygame.draw.rect(DISPLAY, colour, (x,y,20,20), 0) #Inner
@@ -285,10 +308,16 @@ def text_objects(text, font):
     textSurface = font.render(text, True, WHITE)
     return textSurface, textSurface.get_rect()
 
-def message_display_ll(text):
+def message_display_lr(text):
     largeText = pygame.font.Font('freesansbold.ttf',20)
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.center = ((WINDOWWIDTH-70),(WINDOWHEIGHT-20))
+    DISPLAY.blit(TextSurf, TextRect)
+
+def message_display_ll(text):
+    largeText = pygame.font.Font('freesansbold.ttf',20)
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.center = ((70),(WINDOWHEIGHT-20))
     DISPLAY.blit(TextSurf, TextRect)
 
 def message_display(text):
