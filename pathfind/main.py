@@ -1,5 +1,4 @@
 import pygame, random, sys
-import shelve
 from pygame.locals import *
 import sys
 
@@ -23,7 +22,21 @@ WINDOWWIDTH = 1200
 WINDOWHEIGHT = 800
 CELLSIZE = 20
 
-# Make list of empty lists
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def isEmpty(self):
+        return self.items == []
+
+    def enqueue(self, item):
+        self.items.insert(0,item)
+
+    def dequeue(self):
+        return self.items.pop()
+
+    def size(self):
+        return len(self.items)
 
 def main(FPS):
     global DISPLAY, lives, FPSCLOCK, BASICFONT
@@ -32,28 +45,33 @@ def main(FPS):
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAY = pygame.display.set_mode((WINDOWWIDTH,WINDOWHEIGHT))
-    pygame.display.set_caption('Pathfinding')
+    pygame.display.set_caption('Pathfinder')
     lives = 3
     BASICFONT = pygame.font.Font('freesansbold.ttf',18)
 
-    showStartScreen()
-    #Make Game() loop
-    while True:
+    startMode = "Basic"
 
-        if not runGame(FPS,lives):
+    modes = ("Basic","Random","B-First")
+    #mode = showStartScreen()
+    mode = showStartScreen(*modes,startMode)
+    #Make Game() loop
+
+    while True:
+        if not runGame(FPS,lives,mode,modes):
             lives -= 1
-            print(lives)
+            print("Lives left: " + str(lives))
         if lives == 0:
             showGameOverScreen()
+            lives = 3
 
-def runGame(FPS,lives):
+def runGame(FPS,lives,mode,modes):
 
     #Setup game variables
-    playerStartX = 20
-    playerStartY = 10
+    playerStartX = 50
+    playerStartY = 20
 
     aiStartX = 10
-    aiStartY = 10
+    aiStartY = 20
 
     #Game object is a dictionary of player and ai positions
     #gameObject['player'] = position
@@ -65,7 +83,12 @@ def runGame(FPS,lives):
     aiTrail = []
     aiMoves = 0
     wall = []
-    wall.append((15,10)) ; wall.append((6,6)) ; wall.append((1,1)) ; wall.append((5,5))
+    wall.append((30,20)) ; wall.append((30,21)) ; wall.append((30,22)); wall.append((30,19)); wall.append((30,18))
+    freeze = False
+    placePlayer = False
+    placeAi = False
+    futureNode = ""
+
 
     #Main game loop
     while True:
@@ -84,6 +107,30 @@ def runGame(FPS,lives):
                     PDIRECTION = UP
                 elif (event.key == K_DOWN or event.key == K_s) and PDIRECTION != UP:
                     PDIRECTION = DOWN
+                elif event.key == K_m:
+                    if mode == modes[0]:
+                        mode = modes[1]
+                    elif mode == modes[1]:
+                        mode = modes[2]
+                    elif mode == modes[2]:
+                        mode = modes[0]
+                elif event.key == K_f:
+                    if freeze == True:
+                        freeze = False
+                    else:
+                        freeze = True
+                elif event.key == K_p:
+                    if placePlayer == True:
+                        placePlayer = False
+                    else:
+                        placePlayer = True
+                        placeAi = False
+                elif event.key == K_o:
+                    if placeAi == True:
+                        placeAi = False
+                    else:
+                        placeAi = True
+                        placePlayer = False
                 elif event.key == K_ESCAPE:
                     terminate()
                 #print(PDIRECTION)
@@ -92,12 +139,15 @@ def runGame(FPS,lives):
                 mousex = int(mouse[0]/20)
                 mousey = int(mouse[1]/20)
 
-                wallRemove = 0
-
-                if isBlocked(mousex,mousey,wall):
-                    wall.remove((mousex,mousey))
+                if placePlayer:
+                    playerPos = (mousex,mousey)
+                elif placeAi:
+                    aiPos = (mousex,mousey)
                 else:
-                    wall.append((mousex,mousey))
+                    if isBlocked(mousex,mousey,wall):
+                        wall.remove((mousex,mousey))
+                    else:
+                        wall.append((mousex,mousey))
 
         DISPLAY.fill(BLACK)
 
@@ -111,18 +161,29 @@ def runGame(FPS,lives):
 
         aiNextPos = moveAi(*aiPos,AIDIRECTION)
 
-        if not isBlocked(*aiNextPos,wall):
-            aiTrail.append(aiPos) # Add previous position to trail
-            aiPos = aiNextPos
-            aiMoves += 1
-        else:
-            pass
+        #If it has been blocked before, run this!
+        if aiNextPos == futureNode:
+            if mode == "Random":
+                AIDIRECTION = randomDirection()
+                print("Random func return: " + str(AIDIRECTION))
+
+            aiNextPos = moveAi(*aiPos,AIDIRECTION)
+
+        futureNode = aiNextPos
+
+        if not freeze:
+            if not isBlocked(*aiNextPos,wall):
+                aiTrail.append(aiPos) # Add previous position to trail
+                aiPos = aiNextPos
+                aiMoves += 1
+            else:
+                pass
 
         ###### AI SECTION END ##########
 
         playerNextPos = moveAi(*playerPos,PDIRECTION)
 
-        if movePlayer:
+        if movePlayer and not PDIRECTION == 0:
             if not isBlocked(*playerNextPos,wall):
                 playerPos = playerNextPos
                 movePlayer = False
@@ -142,17 +203,83 @@ def runGame(FPS,lives):
         #Draw wall
         for i, (x,y) in enumerate(wall):
             drawRect(*convertToPixel(*wall[i]), WHITE)
-
         drawGrid()
-
-        #Draw aiMoves
+        #Draw aiMoves and life
         message_display_lr('aiMoves: ' + str(aiMoves))
-
         message_display_ll('Lives left: ' + str(lives))
 
-        #if aiPos == playerPos:
-        #    lives -= 1
-        #    print(lives)
+        #Modified variables
+        if freeze == True:
+            message_display_ll('Freeze On', 120)
+        else:
+            message_display_ll('Freeze Off', 120)
+
+        if placePlayer == True:
+            message_display_ll('Pmove On', 240)
+        else:
+            message_display_ll('Pmove Off', 240)
+
+        if placeAi == True:
+            message_display_ll('Aimove On', 360)
+        else:
+            message_display_ll('Aimove Off', 360)
+
+        message_display_ll(mode, 480)
+
+
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
+def showStartScreen(mode1,mode2,mode3,mode):
+
+    while True:
+        DISPLAY.fill(BGCOLOR)
+
+        if mode == mode1:
+            colour = GREEN
+        if mode == mode2:
+            colour = RED
+        if mode == mode3:
+            colour = DARKGRAY
+
+        rectangle = Rect(0, 0, 400, 200)
+        rectangle.center = (WINDOWWIDTH/2,WINDOWHEIGHT/2)
+        pygame.draw.rect(DISPLAY, colour, rectangle)
+
+        message_display("PATHFINDER")
+
+        WW = WINDOWWIDTH / 2
+        WH = WINDOWHEIGHT / 2 + 180
+
+        rectangleTuples = [(WW-220,WH,mode1),(WW,WH,mode2),(WW+220,WH,mode3)]
+
+        for i, (a, b, c) in enumerate(rectangleTuples):
+            rectangle = Rect(0, 0, 200, 100)
+            rectangle.center = (a,b)
+            pygame.draw.rect(DISPLAY, colour, rectangle)
+
+            message_display_custom(c,a,b)
+
+        drawPressKeyMsg()
+
+        #Select mode
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse = pygame.mouse.get_pos()
+                mousex = int(mouse[0])
+                mousey = int(mouse[1])
+                WWH = WH-50
+                if mousey > WWH and mousey < WH+100:
+                    if mousex > WW-100 and mousex < WW+100:
+                        mode = mode2
+                    if mousex > WW-220 and mousex < WW-120:
+                        mode = mode1
+                    if mousex > WW+120 and mousex < WW+220:
+                        mode = mode3
+            if event.type == pygame.KEYUP:
+                return mode
+
+        message_display_ll('Mode selected: ' + str(mode),60)
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -163,27 +290,6 @@ def Lost(playerx,playery,aix,aiy):
     if xdistance == 0:
         if ydistance == 0:
             return True
-
-def showStartScreen():
-
-    while True:
-        DISPLAY.fill(BGCOLOR)
-        number = 5
-
-        rectangle = Rect(0, 0, 400, 200)
-        rectangle.center = (WINDOWWIDTH/2,WINDOWHEIGHT/2)
-        pygame.draw.rect(DISPLAY, DARKGREEN, rectangle)
-
-        message_display("PATHFIND")
-
-        drawPressKeyMsg()
-
-        if checkforKeyPress():
-            pygame.event.get() #clear event queue
-            return
-
-        pygame.display.update()
-        FPSCLOCK.tick(FPS)
 
 def showGameOverScreen():
     while True:
@@ -200,6 +306,31 @@ def drawPressKeyMsg():
     pressKeySurf = BASICFONT.render('Press a key to play.',True,WHITE)
     pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
+    pressKeySurf = BASICFONT.render('Press F to Freeze.',True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, 20)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
+    pressKeySurf = BASICFONT.render('Press P to Move Player.',True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, 40)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
+    pressKeySurf = BASICFONT.render('Press O to Move Ai.',True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, 60)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
+    pressKeySurf = BASICFONT.render('WASD to move player.',True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, 80)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
+    pressKeySurf = BASICFONT.render('Click to add walls.',True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 250, 100)
     DISPLAY.blit(pressKeySurf,pressKeyRect)
 
 def checkforKeyPress():
@@ -308,16 +439,16 @@ def text_objects(text, font):
     textSurface = font.render(text, True, WHITE)
     return textSurface, textSurface.get_rect()
 
-def message_display_lr(text):
+def message_display_lr(text,offset = 0):
     largeText = pygame.font.Font('freesansbold.ttf',20)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((WINDOWWIDTH-70),(WINDOWHEIGHT-20))
+    TextRect.center = ((WINDOWWIDTH-70 - offset),(WINDOWHEIGHT-20))
     DISPLAY.blit(TextSurf, TextRect)
 
-def message_display_ll(text):
+def message_display_ll(text,offset = 0):
     largeText = pygame.font.Font('freesansbold.ttf',20)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((70),(WINDOWHEIGHT-20))
+    TextRect.center = ((70 + offset),(WINDOWHEIGHT-20))
     DISPLAY.blit(TextSurf, TextRect)
 
 def message_display(text):
@@ -325,6 +456,52 @@ def message_display(text):
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.center = ((WINDOWWIDTH/2),(WINDOWHEIGHT/2))
     DISPLAY.blit(TextSurf, TextRect)
+
+def message_display_custom(text,width,height):
+    largeText = pygame.font.Font('freesansbold.ttf',50)
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.center = ((width),(height))
+    DISPLAY.blit(TextSurf, TextRect)
+
+def randomDirection():
+    randomNumber = random.randint(0, 3)
+    if randomNumber == 0:
+        return "RIGHT"
+    elif randomNumber == 1:
+        return "LEFT"
+    elif randomNumber == 2:
+        return "DOWN"
+    elif randomNumber == 3:
+        return "UP"
+
+#BREADTHFIRST = breadthfirst(*playerPos,*aiPos,wall)
+
+def breadthfirst(playerx,playery,aix,aiy,wall):
+    frontier = queue()
+    frontier.put((aix,aiy))
+    visited = {}
+
+    while not frontier.empty():
+        current = frontier.get()
+        for next in graph.neighbors(current):
+            if next not in visited:
+                frontier.put(next)
+                visited[next] = True
+
+def neighbors(node):
+    dirs = [[1,0],[0,1],[-1,0],[0,-1]]
+    for dir in dirs:
+        return [node[0] + dir[0], node[1] + dir[1]]
+
+
+def isNeighbour(node, mapObj):
+    dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    result = []
+    for dir in dirs:
+        neighbor = [node[0] + dir[0], node[1] + dir[1]]
+        if not isWall(mapObj,neighbor[0],neighbor[1]):
+            result.append(neighbor)
+    return result
 
 # END OF FILE
 if __name__ == '__main__':
