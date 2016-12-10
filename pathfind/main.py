@@ -2,6 +2,8 @@ import pygame, random, sys
 from pygame.locals import *
 import sys
 
+sys.setrecursionlimit(5000)
+
 #variables
 WHITE     = (255, 255, 255)
 BLACK     = (  0,   0,   0)
@@ -22,22 +24,6 @@ WINDOWWIDTH = 1200
 WINDOWHEIGHT = 800
 CELLSIZE = 20
 
-class Queue:
-    def __init__(self):
-        self.items = []
-
-    def isEmpty(self):
-        return self.items == []
-
-    def enqueue(self, item):
-        self.items.insert(0,item)
-
-    def dequeue(self):
-        return self.items.pop()
-
-    def size(self):
-        return len(self.items)
-
 def main(FPS):
     global DISPLAY, lives, FPSCLOCK, BASICFONT
 
@@ -51,7 +37,7 @@ def main(FPS):
 
     startMode = "Basic"
 
-    modes = ("Basic","Random","B-First")
+    modes = ("Basic","Random","Memory")
     #mode = showStartScreen()
     mode = showStartScreen(*modes,startMode)
     #Make Game() loop
@@ -88,7 +74,8 @@ def runGame(FPS,lives,mode,modes):
     placePlayer = False
     placeAi = False
     futureNode = ""
-
+    pastNodes = []
+    floodFill = []
 
     #Main game loop
     while True:
@@ -166,10 +153,14 @@ def runGame(FPS,lives,mode,modes):
             if mode == "Random":
                 AIDIRECTION = randomDirection()
                 print("Random func return: " + str(AIDIRECTION))
+            if mode == "Memory":
+                floodFill = memorylane(*playerPos,*aiPos,pastNodes,wall)
+                AIDIRECTION = randomDirection()
 
             aiNextPos = moveAi(*aiPos,AIDIRECTION)
 
         futureNode = aiNextPos
+        pastNodes += [aiPos]
 
         if not freeze:
             if not isBlocked(*aiNextPos,wall):
@@ -194,6 +185,10 @@ def runGame(FPS,lives,mode,modes):
         for i, (x,y) in enumerate(aiTrail):
             drawRect(*convertToPixel(*aiTrail[i]), DARKGRAY)
 
+        for i, (x,y) in enumerate(floodFill):
+            drawRect(*convertToPixel(*floodFill[i]), DARKGREEN)
+            print(floodFill)
+
         #Draw AI
         drawRect(*convertToPixel(*aiPos), GREEN)
 
@@ -204,6 +199,7 @@ def runGame(FPS,lives,mode,modes):
         for i, (x,y) in enumerate(wall):
             drawRect(*convertToPixel(*wall[i]), WHITE)
         drawGrid()
+
         #Draw aiMoves and life
         message_display_lr('aiMoves: ' + str(aiMoves))
         message_display_ll('Lives left: ' + str(lives))
@@ -225,7 +221,6 @@ def runGame(FPS,lives,mode,modes):
             message_display_ll('Aimove Off', 360)
 
         message_display_ll(mode, 480)
-
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -303,35 +298,17 @@ def showGameOverScreen():
         FPSCLOCK.tick(FPS)
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render('Press a key to play.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('Press a key to Play',WINDOWWIDTH - 200,WINDOWHEIGHT-30)
 
-    pressKeySurf = BASICFONT.render('Press F to Freeze.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 250, 20)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('Press F to Freeze',WINDOWWIDTH - 250,20)
 
-    pressKeySurf = BASICFONT.render('Press P to Move Player.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 250, 40)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('Press P to move Player' ,WINDOWWIDTH - 250,40)
 
-    pressKeySurf = BASICFONT.render('Press O to Move Ai.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 250, 60)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('Press O to move Ai',WINDOWWIDTH - 250,60)
 
-    pressKeySurf = BASICFONT.render('WASD to move player.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 250, 80)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('WASD to move Player',WINDOWWIDTH - 250,80)
 
-    pressKeySurf = BASICFONT.render('Click to add walls.',True,WHITE)
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.topleft = (WINDOWWIDTH - 250, 100)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    message_display_custom_small('Click to add walls',WINDOWWIDTH - 250,100)
 
 def checkforKeyPress():
     if len(pygame.event.get(QUIT))>0:
@@ -417,6 +394,10 @@ def isBlocked(aix,aiy, wall):
         return True
     if aiy < 0:
         return True
+    if aiy > (int(WINDOWHEIGHT/20))-1:
+        return True
+    if aix < 0:
+        return True
     return False
 
 def gameInit(playerx,playery,aix,aiy):
@@ -463,6 +444,12 @@ def message_display_custom(text,width,height):
     TextRect.center = ((width),(height))
     DISPLAY.blit(TextSurf, TextRect)
 
+def message_display_custom_small(text,width,height):
+    pressKeySurf = BASICFONT.render(text,True,WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (width, height)
+    DISPLAY.blit(pressKeySurf,pressKeyRect)
+
 def randomDirection():
     randomNumber = random.randint(0, 3)
     if randomNumber == 0:
@@ -474,33 +461,43 @@ def randomDirection():
     elif randomNumber == 3:
         return "UP"
 
-#BREADTHFIRST = breadthfirst(*playerPos,*aiPos,wall)
-
-def breadthfirst(playerx,playery,aix,aiy,wall):
-    frontier = queue()
-    frontier.put((aix,aiy))
-    visited = {}
-
-    while not frontier.empty():
-        current = frontier.get()
-        for next in graph.neighbors(current):
-            if next not in visited:
-                frontier.put(next)
-                visited[next] = True
-
-def neighbors(node):
-    dirs = [[1,0],[0,1],[-1,0],[0,-1]]
-    for dir in dirs:
-        return [node[0] + dir[0], node[1] + dir[1]]
-
-
-def isNeighbour(node, mapObj):
+def neighbors(node,wall):
     dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
     result = []
     for dir in dirs:
         neighbor = [node[0] + dir[0], node[1] + dir[1]]
-        if not isWall(mapObj,neighbor[0],neighbor[1]):
+        if not isBlocked(neighbor[0],neighbor[1],wall):
             result.append(neighbor)
+    return result
+
+def memorylane(playerx,playery,aix,aiy,pastNodes,wall):
+
+    #immediateNeighbours = neighbors((aix,aiy),wall)
+
+    #print("Current position: " + str(aix) + ", "+ str(aiy))
+    #print("Neighbours are: " + str(immediate))
+
+    #Map out entire map with neighbor.
+    #Find shortest path to goal
+    #Make a queue for Path
+    #Return first item from queue every time func is called.
+
+    # 1. Map out map with neighbour. It already knows where the player is. Plays through whole thing with randoms???
+    # Possible... Then cuts out non-profitable moves.
+
+    floodFill = floodfill(aix,aiy,wall,pastNodes)
+
+    return floodFill
+
+def floodfill(x,y,wall,pastNodes):
+    result = []
+    neighbours = neighbors((x,y),wall)
+    for neighbour in neighbours:
+        if neighbour not in pastNodes:
+            pastNodes += [neighbour]
+            #print("Neighbour coords: " + str(neighbour))
+            floodfill(*neighbour,wall,pastNodes)
+            result.append(neighbour)
     return result
 
 # END OF FILE
