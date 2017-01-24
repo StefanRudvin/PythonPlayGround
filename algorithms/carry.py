@@ -2,13 +2,26 @@
 
 '''
 
-6 operations
-299743898 716456069
+ 5 carry operations.
+27.4 carry operations.
+28.4 carry operations.
+29.8 carry operations.
+30.6 carry operations.
+31.6 carry operations.
+32.3 carry operations.
+33.2 carry operations.
 
-156188102
-193749048
-      150
-010011001
+ 5 carry operations.
+36.4 carry operations.
+37.4 carry operations.
+38.8 carry operations.
+39.6 carry operations.
+40.6 carry operations.
+41.3 carry operations.
+42.2 carry operations.
+
+2 carry operations.
+2 carry operations.
 
 
 '''
@@ -49,5 +62,7 @@ while True:
 
     if carryNumbers == 0:
         print "No carry operation."
+    elif carryNumbers == 1:
+        print carryNumbers , "carry operation."
     else:
         print carryNumbers , "carry operations."
