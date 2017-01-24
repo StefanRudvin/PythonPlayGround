@@ -1,0 +1,14 @@
+
+PACMAN Game Thoughts
+
+Class for game:
+Main loop:
+  1. Make variables
+  2. Start screen
+  3. run level
+  4. If dies, count lives.
+
+
+Class for Player
+includes:
+- Movement(input) - if iswall?
