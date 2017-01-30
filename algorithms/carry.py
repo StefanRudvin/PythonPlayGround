@@ -1,34 +1,6 @@
-#Algorithms practical 1
-
-'''
-
- 5 carry operations.
-27.4 carry operations.
-28.4 carry operations.
-29.8 carry operations.
-30.6 carry operations.
-31.6 carry operations.
-32.3 carry operations.
-33.2 carry operations.
-
- 5 carry operations.
-36.4 carry operations.
-37.4 carry operations.
-38.8 carry operations.
-39.6 carry operations.
-40.6 carry operations.
-41.3 carry operations.
-42.2 carry operations.
-
-2 carry operations.
-2 carry operations.
-
-
-'''
+# Algorithms practical 1
 
 while True:
-
-    carrynumbers = 0
 
     userInput = raw_input()
 
@@ -41,21 +13,21 @@ while True:
 
     carryNumbers = 0
 
-    n1 = len(digit1)-1
-    n2 = len(digit2)-1
+    n1 = len(digit1) - 1
+    n2 = len(digit2) - 1
     carryOver = False
 
     while n1 > -1 and n2 > -1:
 
         carry = int(digit1[n1]) + int(digit2[n2])
 
-        if carryOver == True:
+        if carryOver is True:
             carry += 1
             carryOver = False
 
         if carry >= 10:
             carryNumbers += 1
-            carryOver= True
+            carryOver = True
 
         n1 -= 1
         n2 -= 1
@@ -63,6 +35,6 @@ while True:
     if carryNumbers == 0:
         print "No carry operation."
     elif carryNumbers == 1:
-        print carryNumbers , "carry operation."
+        print carryNumbers, "carry operation."
     else:
-        print carryNumbers , "carry operations."
+        print carryNumbers, "carry operations."
