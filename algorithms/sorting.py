@@ -18,7 +18,7 @@ def sortpass(array):
     i = 0
     while i < len(array)-1:
         j = i + 1
-        print("Comparing",array[i],"to",array[j])
+        #print("Comparing",array[i],"to",array[j])
         if int(array[i]) > int(array[j]):
             array[i], array[j] = array[j], array[i]
         i = j

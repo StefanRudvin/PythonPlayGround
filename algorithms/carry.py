@@ -1,4 +1,5 @@
 # Algorithms practical 1
+# User inputs numbers, this program counts how many carry operations an addition produces.
 
 while True:
 
