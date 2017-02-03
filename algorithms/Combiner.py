@@ -11,7 +11,7 @@ while True:
 
     inputString = userInput.split()
 
-    if len(inputString) < 1:
+    if len(inputString) < 1: 
         break
 
     if not len(inputString) < 2:
