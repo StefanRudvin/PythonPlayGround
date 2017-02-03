@@ -1,29 +1,34 @@
-## Binary search algorithm implementation
+## Sorting algorithm python implementation
 
-numbers = [0,1,3,6,8,9,13,25,34,64,73,83,94,101,102,103,104,120,131]
+numbers = [31,192,4104,1,6,2,15,51,162]
+#numbers = [5,4,3,2,1]
 
-def binarysearch(array, value):
-    i = int(len(array)/2)
-    print("Current number:", array[i])
-    if array[i] == value:
-        print("Value found!")
-        return
-    elif array[i] < value:
-        binarysearch(array[i:],value)
-    elif array[i] > value:
-        binarysearch(array[:i],value)
-    else:
-        print("Number not found!")
+def sort(array):
+
+    passes = len(array)
+    i = 0
+    while i < passes:
+        print("Pass number: ",i)
+        i += 1
+        sortpass(array)
+
+    print("Passes done!")
+
+def sortpass(array):
+    i = 0
+    while i < len(array)-1:
+        j = i + 1
+        print("Comparing",array[i],"to",array[j])
+        if int(array[i]) > int(array[j]):
+            array[i], array[j] = array[j], array[i]
+        i = j
 
 def start():
-    value = 34
     print("Welcome to the sorting algorithm")
-    print("Array: ", numbers)
-    print("Look for number: ")
-    value = int(input())
-
-    print("Looking for:", value)
-    binarysearch(numbers,value)
+    print("Array to sort: ", numbers)
+    sort(numbers)
+    print("Sorted array:")
+    print(numbers)
 
 while True:
     start()
