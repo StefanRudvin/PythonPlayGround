@@ -1,23 +1,24 @@
-## Binary search algorithm implementation
+##   Binary search algorithm implementation
 
-numbers = [0,1,3,6,8,9,13,25,34,64,73,83,94,101,102,103,104,120,131]
+numbers = [0, 1, 3, 6, 8, 9, 13, 25, 34, 64, 73, 83, 94, 101, 102, 103, 104, 120, 131]
 
-#numbers = [0,1,2,3,4,5,6,7]
+# numbers = [0,1,2,3,4,5,6,7]
 
-def binarysearch(array, value, currentpoint):
-    i = int(len(array)/2)
-    print("Current number:", array[i])
-    if array[i] == value:
-        print("Value",value,"found at position", currentpoint)
+def binarysearch(numbers, value: object, currentpoint: object) -> object:
+    i = int(len(numbers) / 2)
+    print("Current number:", numbers[i])
+    if numbers[i] == value:
+        print("Value", value, "found at position", currentpoint)
         return
-    elif array[i] < value:
-        currentpoint = currentpoint + int(len(array)/4)
-        binarysearch(array[i:],value, currentpoint)
-    elif array[i] > value:
-        currentpoint = currentpoint - int(len(array)/4)
-        binarysearch(array[:i],value, currentpoint)
+    elif value > numbers[i]:
+        currentpoint += int(len(numbers) / 4)
+        binarysearch(numbers[i:], value, currentpoint)
+    elif value < numbers[i]:
+        currentpoint -= int(len(numbers) / 4)
+        binarysearch(numbers[:i], value, currentpoint)
     else:
         print("Number not found!")
+
 
 def start():
     print("Welcome to binary search algorithm")
@@ -26,9 +27,10 @@ def start():
     value = int(input())
 
     print("Looking for:", value)
-    currentpoint = int(len(numbers)/2)
+    currentpoint = int(len(numbers) / 2)
 
-    binarysearch(numbers,value, currentpoint)
+    binarysearch(numbers, value, currentpoint)
+
 
 while True:
     start()

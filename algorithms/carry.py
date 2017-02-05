@@ -1,5 +1,6 @@
 # Algorithms practical 1
 # User inputs numbers, this program counts how many carry operations an addition produces.
+from pip._vendor.distlib.compat import raw_input
 
 while True:
 
@@ -34,8 +35,9 @@ while True:
         n2 -= 1
 
     if carryNumbers == 0:
-        print "No carry operation."
+        print
+        'No carry operation.'
     elif carryNumbers == 1:
-        print carryNumbers, "carry operation."
+        print(carryNumbers, "carry operation.")
     else:
-        print carryNumbers, "carry operations."
+        print(carryNumbers, "carry operations.")
