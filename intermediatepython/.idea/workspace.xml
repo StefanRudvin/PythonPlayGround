@@ -2,11 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68654f1d-993f-4180-ad6b-8806be3ada34" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/stefanrudvin.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/10multiprocessing.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/11multiprocessing2.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/12Beautifulsoup.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/9generators.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/animationpractise.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/assertiontutorial.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/car.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/classlearn.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/drawPractise.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/fizzbuzz.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/globtest.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/helloworld.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/html.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/nav.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/ooptutorial.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/pacmanremovebackup.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/regextutorial.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/rpg.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/test.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/test1.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/testfile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/work.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../Playground/youtube.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
