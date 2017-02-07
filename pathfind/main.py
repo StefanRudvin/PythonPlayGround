@@ -1,18 +1,19 @@
-import pygame, random, sys
-from pygame.locals import *
+import pygame
+import random
 import sys
+from pygame.locals import *
 
 sys.setrecursionlimit(5000)
 
-#variables
-WHITE     = (255, 255, 255)
-BLACK     = (  0,   0,   0)
-RED       = (255,   0,   0)
-GREEN     = (  0, 255,   0)
-DARKGREEN = (  0, 155,   0)
-DARKGRAY  = ( 40,  40,  40)
-BLUE      = (  0,  51, 102)
-BGCOLOR   = BLACK
+# variables
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+DARKGREEN = (0, 155, 0)
+DARKGRAY = (40, 40, 40)
+BLUE = (0, 51, 102)
+BGCOLOR = BLACK
 
 UP = 'UP'
 DOWN = 'DOWN'
@@ -24,52 +25,57 @@ WINDOWWIDTH = 1200
 WINDOWHEIGHT = 800
 CELLSIZE = 20
 
+
 def main(FPS):
     global DISPLAY, lives, FPSCLOCK, BASICFONT
 
-    #Setup pyGame
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    DISPLAY = pygame.display.set_mode((WINDOWWIDTH,WINDOWHEIGHT))
+    DISPLAY = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     pygame.display.set_caption('Pathfinder')
     lives = 3
-    BASICFONT = pygame.font.Font('freesansbold.ttf',18)
+    BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
 
     startMode = "Basic"
 
-    modes = ("Basic","Random","Memory")
-    #mode = showStartScreen()
-    mode = showStartScreen(*modes,startMode)
-    #Make Game() loop
+    modes = ("Basic", "Random", "Memory")
+    # mode = showStartScreen()
+    mode = showStartScreen(*modes, startMode)
+    # Make Game() loop
 
     while True:
-        if not runGame(FPS,lives,mode,modes):
+        if not runGame(FPS, lives, mode, modes):
             lives -= 1
             print("Lives left: " + str(lives))
         if lives == 0:
             showGameOverScreen()
             lives = 3
 
-def runGame(FPS,lives,mode,modes):
 
-    #Setup game variables
+def runGame(FPS, lives, mode, modes):
+
+    # Setup game variables
     playerStartX = 50
     playerStartY = 20
 
     aiStartX = 10
     aiStartY = 20
 
-    #Game object is a dictionary of player and ai positions
-    #gameObject['player'] = position
-    gameObject = gameInit(playerStartX,playerStartY,aiStartX,aiStartY)
-    playerPos = (gameObject['playerx'],gameObject['playery'])
-    aiPos = (gameObject['aix'],gameObject['aiy'])
+    # Game object is a dictionary of player and ai positions
+    # gameObject['player'] = position
+    gameObject = gameInit(playerStartX, playerStartY, aiStartX, aiStartY)
+    playerPos = (gameObject['playerx'], gameObject['playery'])
+    aiPos = (gameObject['aix'], gameObject['aiy'])
 
-    #Game Variables
+    # Game Variables
     aiTrail = []
     aiMoves = 0
     wall = []
-    wall.append((30,20)) ; wall.append((30,21)) ; wall.append((30,22)); wall.append((30,19)); wall.append((30,18))
+    wall.append((30, 20))
+    wall.append((30, 21))
+    wall.append((30, 22))
+    wall.append((30, 19))
+    wall.append((30, 18))
     freeze = False
     placePlayer = False
     placeAi = False
@@ -77,7 +83,7 @@ def runGame(FPS,lives,mode,modes):
     pastNodes = []
     floodFill = []
 
-    #Main game loop
+    # Main game loop
     while True:
         PDIRECTION = 0
         movePlayer = False
@@ -102,109 +108,110 @@ def runGame(FPS,lives,mode,modes):
                     elif mode == modes[2]:
                         mode = modes[0]
                 elif event.key == K_f:
-                    if freeze == True:
+                    if freeze:
                         freeze = False
                     else:
                         freeze = True
                 elif event.key == K_p:
-                    if placePlayer == True:
+                    if placePlayer:
                         placePlayer = False
                     else:
                         placePlayer = True
                         placeAi = False
                 elif event.key == K_o:
-                    if placeAi == True:
+                    if placeAi:
                         placeAi = False
                     else:
                         placeAi = True
                         placePlayer = False
                 elif event.key == K_ESCAPE:
                     terminate()
-                #print(PDIRECTION)
+                # print(PDIRECTION)
             elif event.type == pygame.MOUSEBUTTONUP:
                 mouse = pygame.mouse.get_pos()
-                mousex = int(mouse[0]/20)
-                mousey = int(mouse[1]/20)
+                mousex = int(mouse[0] / 20)
+                mousey = int(mouse[1] / 20)
 
                 if placePlayer:
-                    playerPos = (mousex,mousey)
+                    playerPos = (mousex, mousey)
                 elif placeAi:
-                    aiPos = (mousex,mousey)
+                    aiPos = (mousex, mousey)
                 else:
-                    if isBlocked(mousex,mousey,wall):
-                        wall.remove((mousex,mousey))
+                    if isBlocked(mousex, mousey, wall):
+                        wall.remove((mousex, mousey))
                     else:
-                        wall.append((mousex,mousey))
+                        wall.append((mousex, mousey))
 
         DISPLAY.fill(BLACK)
 
-        ###### AI SECTION START ##########
+        # AI SECTION START
 
-        #Returns "DOWN", "UP", etc
-        AIDIRECTION = heuristics(*playerPos,*aiPos)
+        # Returns "DOWN", "UP", etc
 
-        if Lost(*playerPos,*aiPos):
+        AIDIRECTION = heuristics(*playerPos, *aiPos)
+
+        if Lost(*playerPos, *aiPos):
             return False
 
-        aiNextPos = moveAi(*aiPos,AIDIRECTION)
+        aiNextPos = moveAi(*aiPos, AIDIRECTION)
 
-        #If it has been blocked before, run this!
+        # If it has been blocked before, run this!
         if aiNextPos == futureNode:
             if mode == "Random":
                 AIDIRECTION = randomDirection()
                 print("Random func return: " + str(AIDIRECTION))
             if mode == "Memory":
-                floodFill = memorylane(*playerPos,*aiPos,pastNodes,wall)
+                floodFill = memorylane(*playerPos, *aiPos, pastNodes, wall)
                 AIDIRECTION = randomDirection()
 
-            aiNextPos = moveAi(*aiPos,AIDIRECTION)
+            aiNextPos = moveAi(*aiPos, AIDIRECTION)
 
         futureNode = aiNextPos
         pastNodes += [aiPos]
 
         if not freeze:
-            if not isBlocked(*aiNextPos,wall):
-                aiTrail.append(aiPos) # Add previous position to trail
+            if not isBlocked(*aiNextPos, wall):
+                aiTrail.append(aiPos)  # Add previous position to trail
                 aiPos = aiNextPos
                 aiMoves += 1
             else:
                 pass
 
-        ###### AI SECTION END ##########
+        # AI SECTION END
 
-        playerNextPos = moveAi(*playerPos,PDIRECTION)
+        playerNextPos = moveAi(*playerPos, PDIRECTION)
 
         if movePlayer and not PDIRECTION == 0:
-            if not isBlocked(*playerNextPos,wall):
+            if not isBlocked(*playerNextPos, wall):
                 playerPos = playerNextPos
                 movePlayer = False
             else:
                 pass
 
-        #Draw aiTrail
-        for i, (x,y) in enumerate(aiTrail):
+        # Draw aiTrail
+        for i, (x, y) in enumerate(aiTrail):
             drawRect(*convertToPixel(*aiTrail[i]), DARKGRAY)
 
-        for i, (x,y) in enumerate(floodFill):
+        for i, (x, y) in enumerate(floodFill):
             drawRect(*convertToPixel(*floodFill[i]), DARKGREEN)
             print(floodFill)
 
-        #Draw AI
+        # Draw AI
         drawRect(*convertToPixel(*aiPos), GREEN)
 
-        #Draw player
-        drawRect(*convertToPixel(*playerPos),RED)
+        # Draw player
+        drawRect(*convertToPixel(*playerPos), RED)
 
-        #Draw wall
-        for i, (x,y) in enumerate(wall):
+        # Draw wall
+        for i, (x, y) in enumerate(wall):
             drawRect(*convertToPixel(*wall[i]), WHITE)
         drawGrid()
 
-        #Draw aiMoves and life
+        # Draw aiMoves and life
         message_display_lr('aiMoves: ' + str(aiMoves))
         message_display_ll('Lives left: ' + str(lives))
 
-        #Modified variables
+        # Modified variables
         if freeze == True:
             message_display_ll('Freeze On', 120)
         else:
@@ -225,7 +232,8 @@ def runGame(FPS,lives,mode,modes):
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-def showStartScreen(mode1,mode2,mode3,mode):
+
+def showStartScreen(mode1, mode2, mode3, mode):
 
     while True:
         DISPLAY.fill(BGCOLOR)
@@ -238,7 +246,7 @@ def showStartScreen(mode1,mode2,mode3,mode):
             colour = DARKGRAY
 
         rectangle = Rect(0, 0, 400, 200)
-        rectangle.center = (WINDOWWIDTH/2,WINDOWHEIGHT/2)
+        rectangle.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         pygame.draw.rect(DISPLAY, colour, rectangle)
 
         message_display("PATHFINDER")
@@ -246,45 +254,48 @@ def showStartScreen(mode1,mode2,mode3,mode):
         WW = WINDOWWIDTH / 2
         WH = WINDOWHEIGHT / 2 + 180
 
-        rectangleTuples = [(WW-220,WH,mode1),(WW,WH,mode2),(WW+220,WH,mode3)]
+        rectangleTuples = [(WW - 220, WH, mode1),
+                           (WW, WH, mode2), (WW + 220, WH, mode3)]
 
         for i, (a, b, c) in enumerate(rectangleTuples):
             rectangle = Rect(0, 0, 200, 100)
-            rectangle.center = (a,b)
+            rectangle.center = (a, b)
             pygame.draw.rect(DISPLAY, colour, rectangle)
 
-            message_display_custom(c,a,b)
+            message_display_custom(c, a, b)
 
         drawPressKeyMsg()
 
-        #Select mode
+        # Select mode
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
                 mousex = int(mouse[0])
                 mousey = int(mouse[1])
-                WWH = WH-50
-                if mousey > WWH and mousey < WH+100:
-                    if mousex > WW-100 and mousex < WW+100:
+                WWH = WH - 50
+                if mousey > WWH and mousey < WH + 100:
+                    if mousex > WW - 100 and mousex < WW + 100:
                         mode = mode2
-                    if mousex > WW-220 and mousex < WW-120:
+                    if mousex > WW - 220 and mousex < WW - 120:
                         mode = mode1
-                    if mousex > WW+120 and mousex < WW+220:
+                    if mousex > WW + 120 and mousex < WW + 220:
                         mode = mode3
             if event.type == pygame.KEYUP:
                 return mode
 
-        message_display_ll('Mode selected: ' + str(mode),60)
+        message_display_ll('Mode selected: ' + str(mode), 60)
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-def Lost(playerx,playery,aix,aiy):
-    xdistance = abs(playerx-aix)
-    ydistance = abs(playery-aiy)
+
+def Lost(playerx, playery, aix, aiy):
+    xdistance = abs(playerx - aix)
+    ydistance = abs(playery - aiy)
     if xdistance == 0:
         if ydistance == 0:
             return True
+
 
 def showGameOverScreen():
     while True:
@@ -292,26 +303,30 @@ def showGameOverScreen():
         message_display("GAME OVER")
         drawPressKeyMsg()
         if checkforKeyPress():
-            pygame.event.get() #clear event queue
+            pygame.event.get()  # clear event queue
             return
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+
 def drawPressKeyMsg():
-    message_display_custom_small('Press a key to Play',WINDOWWIDTH - 200,WINDOWHEIGHT-30)
+    message_display_custom_small(
+        'Press a key to Play', WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
 
-    message_display_custom_small('Press F to Freeze',WINDOWWIDTH - 250,20)
+    message_display_custom_small('Press F to Freeze', WINDOWWIDTH - 250, 20)
 
-    message_display_custom_small('Press P to move Player' ,WINDOWWIDTH - 250,40)
+    message_display_custom_small(
+        'Press P to move Player', WINDOWWIDTH - 250, 40)
 
-    message_display_custom_small('Press O to move Ai',WINDOWWIDTH - 250,60)
+    message_display_custom_small('Press O to move Ai', WINDOWWIDTH - 250, 60)
 
-    message_display_custom_small('WASD to move Player',WINDOWWIDTH - 250,80)
+    message_display_custom_small('WASD to move Player', WINDOWWIDTH - 250, 80)
 
-    message_display_custom_small('Click to add walls',WINDOWWIDTH - 250,100)
+    message_display_custom_small('Click to add walls', WINDOWWIDTH - 250, 100)
+
 
 def checkforKeyPress():
-    if len(pygame.event.get(QUIT))>0:
+    if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
     keyUpEvents = pygame.event.get(KEYUP)
@@ -321,58 +336,62 @@ def checkforKeyPress():
         terminate()
     return keyUpEvents[0].key
 
-def drawRect(x,y,colour):
-    pygame.draw.rect(DISPLAY, colour, (x,y,20,20), 0) #Inner
-    pygame.draw.rect(DISPLAY, WHITE, (x,y,20,20), 2) #Outer
+
+def drawRect(x, y, colour):
+    pygame.draw.rect(DISPLAY, colour, (x, y, 20, 20), 0)  # Inner
+    pygame.draw.rect(DISPLAY, WHITE, (x, y, 20, 20), 2)  # Outer
+
 
 def drawGrid():
-    for x in range(0, WINDOWWIDTH,CELLSIZE): #Draw vertical lines
-        pygame.draw.line(DISPLAY,DARKGRAY,(x,0),(x,WINDOWHEIGHT))
+    for x in range(0, WINDOWWIDTH, CELLSIZE):  # Draw vertical lines
+        pygame.draw.line(DISPLAY, DARKGRAY, (x, 0), (x, WINDOWHEIGHT))
 
-    for y in range(0,WINDOWHEIGHT,CELLSIZE): #Draw horizontal lines
-        pygame.draw.line(DISPLAY,DARKGRAY,(0,y),(WINDOWWIDTH,y))
+    for y in range(0, WINDOWHEIGHT, CELLSIZE):  # Draw horizontal lines
+        pygame.draw.line(DISPLAY, DARKGRAY, (0, y), (WINDOWWIDTH, y))
 
-def heuristics(playerx,playery,aix,aiy):
-    xdistance = abs(playerx-aix)
-    ydistance = abs(playery-aiy)
 
-    if xdistance < ydistance: #Ai is further in Y direction
+def heuristics(playerx, playery, aix, aiy):
+    xdistance = abs(playerx - aix)
+    ydistance = abs(playery - aiy)
+
+    if xdistance < ydistance:  # Ai is further in Y direction
         if playery > aiy:
             return "DOWN"
         else:
             return "UP"
     elif xdistance > ydistance:
-        if playerx > aix: #Ai is futher in X direction
+        if playerx > aix:  # Ai is futher in X direction
             return "RIGHT"
         else:
             return "LEFT"
-    elif xdistance == ydistance: #Same distance
-        if playerx > aix: # Player is 'EAST'
-            if aiy > playery: # Player is northeast
+    elif xdistance == ydistance:  # Same distance
+        if playerx > aix:  # Player is 'EAST'
+            if aiy > playery:  # Player is northeast
                 randomNumber = random.randint(0, 1)
                 if randomNumber == 0:
                     return "RIGHT"
                 else:
                     return "UP"
-            else: #Player is southeast
+            else:  # Player is southeast
                 randomNumber = random.randint(0, 1)
                 if randomNumber == 0:
                     return "RIGHT"
                 else:
                     return "DOWN"
-        else: #Player is 'WEST'
-            if aiy > playery: # Player is northwest
+        else:  # Player is 'WEST'
+            if aiy > playery:  # Player is northwest
                 randomNumber = random.randint(0, 1)
                 if randomNumber == 0:
                     return "LEFT"
                 else:
                     return "UP"
-            else: #Player is southwest
+            else:  # Player is southwest
                 randomNumber = random.randint(0, 1)
                 if randomNumber == 0:
                     return "LEFT"
                 else:
                     return "DOWN"
+
 
 def moveAi(aix, aiy, direction):
     if direction == "UP":
@@ -384,24 +403,26 @@ def moveAi(aix, aiy, direction):
     elif direction == "RIGHT":
         return aix + 1, aiy
 
-def isBlocked(aix,aiy, wall):
-    for i, (x,y) in enumerate(wall):
+
+def isBlocked(aix, aiy, wall):
+    for i, (x, y) in enumerate(wall):
         if x == aix and y == aiy:
             return True
-    #Add sides of the game
-    #print(int(WINDOWHEIGHT/20),aiy)
-    if aix > (int(WINDOWWIDTH/20))-1:
+    # Add sides of the game
+    # print(int(WINDOWHEIGHT/20),aiy)
+    if aix > (int(WINDOWWIDTH / 20)) - 1:
         return True
     if aiy < 0:
         return True
-    if aiy > (int(WINDOWHEIGHT/20))-1:
+    if aiy > (int(WINDOWHEIGHT / 20)) - 1:
         return True
     if aix < 0:
         return True
     return False
 
-def gameInit(playerx,playery,aix,aiy):
-    gameObject={}
+
+def gameInit(playerx, playery, aix, aiy):
+    gameObject = {}
     gameObject['playerx'] = playerx
     gameObject['playery'] = playery
     gameObject['aix'] = aix
@@ -409,46 +430,55 @@ def gameInit(playerx,playery,aix,aiy):
 
     return gameObject
 
-def convertToPixel(x,y):
-    return int(x*20), int(y*20)
+
+def convertToPixel(x, y):
+    return int(x * 20), int(y * 20)
+
 
 def terminate():
     pygame.quit()
     sys.exit()
 
+
 def text_objects(text, font):
     textSurface = font.render(text, True, WHITE)
     return textSurface, textSurface.get_rect()
 
-def message_display_lr(text,offset = 0):
-    largeText = pygame.font.Font('freesansbold.ttf',20)
+
+def message_display_lr(text, offset=0):
+    largeText = pygame.font.Font('freesansbold.ttf', 20)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((WINDOWWIDTH-70 - offset),(WINDOWHEIGHT-20))
+    TextRect.center = ((WINDOWWIDTH - 70 - offset), (WINDOWHEIGHT - 20))
     DISPLAY.blit(TextSurf, TextRect)
 
-def message_display_ll(text,offset = 0):
-    largeText = pygame.font.Font('freesansbold.ttf',20)
+
+def message_display_ll(text, offset=0):
+    largeText = pygame.font.Font('freesansbold.ttf', 20)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((70 + offset),(WINDOWHEIGHT-20))
+    TextRect.center = ((70 + offset), (WINDOWHEIGHT - 20))
     DISPLAY.blit(TextSurf, TextRect)
+
 
 def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf',50)
+    largeText = pygame.font.Font('freesansbold.ttf', 50)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((WINDOWWIDTH/2),(WINDOWHEIGHT/2))
+    TextRect.center = ((WINDOWWIDTH / 2), (WINDOWHEIGHT / 2))
     DISPLAY.blit(TextSurf, TextRect)
 
-def message_display_custom(text,width,height):
-    largeText = pygame.font.Font('freesansbold.ttf',50)
+
+def message_display_custom(text, width, height):
+    largeText = pygame.font.Font('freesansbold.ttf', 50)
     TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((width),(height))
+    TextRect.center = ((width), (height))
     DISPLAY.blit(TextSurf, TextRect)
 
-def message_display_custom_small(text,width,height):
-    pressKeySurf = BASICFONT.render(text,True,WHITE)
+
+def message_display_custom_small(text, width, height):
+    pressKeySurf = BASICFONT.render(text, True, WHITE)
     pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (width, height)
-    DISPLAY.blit(pressKeySurf,pressKeyRect)
+    DISPLAY.blit(pressKeySurf, pressKeyRect)
+
 
 def randomDirection():
     randomNumber = random.randint(0, 3)
@@ -461,45 +491,51 @@ def randomDirection():
     elif randomNumber == 3:
         return "UP"
 
-def neighbors(node,wall):
+
+def neighbors(node, wall):
     dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
     result = []
     for dir in dirs:
         neighbor = [node[0] + dir[0], node[1] + dir[1]]
-        if not isBlocked(neighbor[0],neighbor[1],wall):
+        if not isBlocked(neighbor[0], neighbor[1], wall):
             result.append(neighbor)
     return result
 
-def memorylane(playerx,playery,aix,aiy,pastNodes,wall):
+
+def memorylane(playerx, playery, aix, aiy, pastNodes, wall):
 
     #immediateNeighbours = neighbors((aix,aiy),wall)
 
     #print("Current position: " + str(aix) + ", "+ str(aiy))
     #print("Neighbours are: " + str(immediate))
 
-    #Map out entire map with neighbor.
-    #Find shortest path to goal
-    #Make a queue for Path
-    #Return first item from queue every time func is called.
+    # Map out entire map with neighbor.
+    # Find shortest path to goal
+    # Make a queue for Path
+    # Return first item from queue every time func is called.
 
-    # 1. Map out map with neighbour. It already knows where the player is. Plays through whole thing with randoms???
+    # 1. Map out map with neighbour. It already knows where the player is.
+    # Plays through whole thing with randoms???
     # Possible... Then cuts out non-profitable moves.
 
-    floodFill = floodfill(aix,aiy,wall,pastNodes)
+    floodFill = floodfill(aix, aiy, wall, pastNodes)
 
     return floodFill
 
-def floodfill(x,y,wall,pastNodes):
+
+def floodfill(x, y, wall, pastNodes):
     result = []
-    neighbours = neighbors((x,y),wall)
+    neighbours = neighbors((x, y), wall)
     for neighbour in neighbours:
         if neighbour not in pastNodes:
             pastNodes += [neighbour]
-            #print("Neighbour coords: " + str(neighbour))
-            floodfill(*neighbour,wall,pastNodes)
+            # print("Neighbour coords: " + str(neighbour))
+            floodfill(*neighbour, wall, pastNodes)
             result.append(neighbour)
     return result
 
 # END OF FILE
+
+
 if __name__ == '__main__':
     main(FPS)

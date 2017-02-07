@@ -4,6 +4,7 @@ import requests
 import re
 import os
 
+
 class comic():
     """docstring for comic."""
     def __init__(self, url, currentNumber=1):
@@ -14,7 +15,7 @@ class comic():
     def getxml(self):
         try:
             source = urllib.request.urlopen(self.url).read()
-            soup = bs.BeautifulSoup(source,'lxml')
+            soup = bs.BeautifulSoup(source, 'lxml')
             self.soup = soup
             return soup
         except Exception as e:
@@ -23,7 +24,7 @@ class comic():
 
     def imgurl(self):
         try:
-            imgs = self.soup.findAll("div", {"id":"comic"})[0]
+            imgs = self.soup.findAll("div", {"id": "comic"})[0]
             image = imgs.find("img")
             imageSrc = image['src']
             imgurl = "http://" + imageSrc.replace("//", "")
@@ -48,19 +49,22 @@ class comic():
             temp_file.write(img)
 
 # get latest image number
+
+
 def getMaxImage():
     url = "https://xkcd.com/"
     Comic = comic(url)
     page = Comic.getxml()
-    page = page.findAll("ul", { "class" : "comicNav" })[0]
+    page = page.findAll("ul", {"class": "comicNav"})[0]
     href = page.findAll("a")[1]
     print(href)
+
 
 def main():
     print("-- Welcome to the xkcd image downloader --")
     print("Files are created in ./xkcd in the root of this program.")
     getMaxImage()
-    x = input("Enter range of images to download(e.g. 30-40) or single number: ")
+    x = input("Enter range of images to download or single number: ")
 
     if "-" in x:
         startNum = int(x.split("-")[0])
@@ -71,7 +75,7 @@ def main():
 
     baseurl = "https://xkcd.com/"
 
-    for i in range(startNum,endNum+1):
+    for i in range(startNum, endNum + 1):
 
         url = baseurl + str(i)
         Comic = comic(url, i)
@@ -79,10 +83,9 @@ def main():
         Comic.imgurl()
         Comic.downloadimg()
 
-        print("Image number",i , "from url", url, "downloaded.")
+        print("Image number", i, "from url", url, "downloaded.")
 
-
-    print("Script done.",(endNum+1) - startNum,"images downloaded.")
+    print("Script done.", (endNum + 1) - startNum, "images downloaded.")
 
 
 if __name__ == '__main__':

@@ -100,3 +100,8 @@ def main():
 if __name__ == '__main__':
     main()
 
+class ClassName(object):
+    """docstring for ."""
+    def __init__(self, arg):
+        super(, self).__init__()
+        self.arg = arg

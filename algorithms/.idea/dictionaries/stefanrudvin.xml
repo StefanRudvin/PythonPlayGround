@@ -2,6 +2,12 @@
   <dictionary name="stefanrudvin">
     <words>
       <w>currentpoint</w>
+      <w>flipbyn</w>
+      <w>flipnumber</w>
+      <w>getflipnumber</w>
+      <w>getuserinput</w>
+      <w>pancakenum</w>
+      <w>pancakenumber</w>
       <w>userinput</w>
     </words>
   </dictionary>
