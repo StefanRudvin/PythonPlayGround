@@ -1,5 +1,6 @@
 import os
 
+
 class Map():
     """This class opens Level.txt, creates an array out of it and variables for
     player, ghost, walls, points, superpoints. Also provides getter functions for
@@ -14,6 +15,8 @@ class Map():
         self.points = []
         self.superpoints = []
 
+        print("MapGen class initialized.")
+
     def getLevel(self):
         assert os.path.exists(
             self._filename), 'Can find the level file: %s' % (self._filename)
@@ -22,6 +25,7 @@ class Map():
         mapFile.close()
 
         level = []
+        mapObj = []
 
         for linenum in range(len(content)):
             line = content[linenum].rstrip('\r\n')
@@ -30,8 +34,17 @@ class Map():
                 # This line is part of the map.
                 level.append(line)
 
-        self.level = level
-        return level
+        for x in range(len(level[0])):
+            mapObj.append([])
+        for y in range(len(level)):
+            for x in range(len(level[0])):
+                mapObj[x].append(level[y][x])
+
+        self.level = mapObj
+
+        # print("This should be O: ", self.level[0][9])
+        # print(mapObj)
+        return self.level
 
     def makeLevelVariables(self):
         for x in range(len(self.level)):
