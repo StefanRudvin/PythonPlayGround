@@ -6,11 +6,12 @@ import random
 class Draw():
     """Draw class for OOP pacman"""
 
-    def __init__(self, display, cellsize, width, height):
-        self._display_surface = display
-        self._cellsize = cellsize
-        self._width = width
-        self._height = height
+    def __init__(self):
+
+        self._cellsize = 40
+        self.size = self._width, self._height = 760, 840
+        self._display_surface = None
+        self._flags = pg.HWSURFACE | pg.DOUBLEBUF
 
         self.BGCOLOR = (0, 0, 0)
         self.DARKGRAY = (40, 40, 40)
@@ -21,6 +22,10 @@ class Draw():
         self.playerColour = (0, 255, 255)
         self.ghostColour = (255, 255, 255)
         self.wallColour = (40, 40, 40)
+
+        pg.init()
+        self._display_surface = pg.display.set_mode(self.size, self._flags)
+        pg.display.set_caption("Pacman")
 
         print("Draw class initialized.")
 
@@ -92,3 +97,9 @@ class Draw():
 
     def convertToPixel(self, x, y):
         return int(x * self._cellsize), int(y * self._cellsize)
+
+    def _get_half_width(self):
+        return self._width / 2
+
+    def _get_half_height(self):
+        return self._height / 2

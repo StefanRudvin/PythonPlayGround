@@ -60,18 +60,3 @@ class Map():
                     self.points.append([x, y])
                 elif point == "z":
                     self.superpoints.append([x, y])
-
-    def getInitialPlayerPos(self):
-        return self.playerPos
-
-    def getGhostInitialPos(self):
-        return self.ghosts
-
-    def getWalls(self):
-        return self.walls
-
-    def getPoints(self):
-        return self.points
-
-    def getSuperPoints(self):
-        return self.superpoints

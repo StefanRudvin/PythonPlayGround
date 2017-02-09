@@ -55,7 +55,12 @@ class Player():
             v = 0
 
         if not self.isBlocked(x[0], x[1]):
+            if x[0] < 0:
+                x = (18, x[1])
+            elif x[0] > 18:
+                x = (0, x[1])
             self.playerPos = x
+        
         self.moveHor = h
         self.moveVert = v
 

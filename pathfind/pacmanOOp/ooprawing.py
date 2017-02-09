@@ -5,6 +5,8 @@ import mapGen
 import random
 from draw import Draw
 from player import Player
+from ghost import Ghost
+from collision import Collision
 
 # Colours
 # Add colours here instead of __init__
@@ -19,37 +21,21 @@ from player import Player
 
 '''
 
-
 class Game:
 
     def __init__(self):
         self._running = True
-        self._display_surface = None
         self._clock = pg.time.Clock()
-        self._flags = pg.HWSURFACE | pg.DOUBLEBUF
-        self._cellsize = 40
-        self.size = self._width, self._height = 760, 840
-
         self.FPS = 10
-        self.moveVert = 0
-        self.moveHor = 0
 
         self.playerPos = (0, 0)
         self.ghostPos = []
         self.walls = []
         self.superPoints = []
         self.points = []
-
-    def _get_half_width(self):
-        return self._width / 2
-
-    def _get_half_height(self):
-        return self._height / 2
+        self.score = 0
 
     def on_init(self):
-        pg.init()
-        self._display_surface = pg.display.set_mode(self.size, self._flags)
-        pg.display.set_caption("Pacman")
 
         # Initialize level
         level = mapGen.Map()
@@ -57,19 +43,24 @@ class Game:
         level.makeLevelVariables()
 
         # Initialize Draw class
-        self.draw = Draw(self._display_surface, self._cellsize,
-                         self._width, self._height)
+        self.draw = Draw()
 
         # Get variables from .txt
-        self.playerPos = level.getInitialPlayerPos()
-        self.ghostPos = level.getGhostInitialPos()
-        self.walls = level.getWalls()
-        self.superPoints = level.getSuperPoints()
-        self.points = level.getPoints()
+        self.playerPos = level.playerPos
+        self.ghostPos = level.ghosts
+        self.walls = level.walls
+        self.superPoints = level.superpoints
+        self.points = level.points
         self._running = True
 
         # Initialize player class
         self.player = Player(self.playerPos, self.walls)
+
+        # Initialize Ghost class
+        self.ghost1 = Ghost(self.playerPos, self.ghostPos[0], self.walls)
+
+        # Initialize Collision class
+        self.collision = Collision()
 
     def on_event(self, event):
         if event.type == QUIT or \
@@ -83,12 +74,13 @@ class Game:
 
         self.playerPos = self.player.movePlayer()
 
-        self.checkPointCollision()
+        # Update collision class
+        self.collision.update(self.points, self.playerPos, self.superPoints)
 
-    def checkPointCollision(self):
-        for i, (j, k) in enumerate(self.points):
-            if (self.playerPos[0], self.playerPos[1]) == (j, k):
-                del self.points[i]
+        # Get variables
+        self.score = self.collision.score
+        self.points = self.collision.points
+        self.superPoints = self.collision.superPoints
 
     def on_render(self):
         # Draw() class renders everything.
