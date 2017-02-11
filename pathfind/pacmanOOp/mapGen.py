@@ -42,11 +42,10 @@ class Map():
 
         self.level = mapObj
 
-        # print("This should be O: ", self.level[0][9])
-        # print(mapObj)
-        return self.level
-
     def makeLevelVariables(self):
+
+        self.getLevel()
+
         for x in range(len(self.level)):
             for y in range(len(self.level[0])):
                 point = self.level[x][y]

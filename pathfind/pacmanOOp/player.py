@@ -60,7 +60,7 @@ class Player():
             elif x[0] > 18:
                 x = (0, x[1])
             self.playerPos = x
-        
+
         self.moveHor = h
         self.moveVert = v
 

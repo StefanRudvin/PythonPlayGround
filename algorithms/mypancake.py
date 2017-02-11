@@ -1,7 +1,7 @@
 
 def main():
     array = input("Array: ")
-    pancake(list(array))
+    array = pancake(list(array))
     print('Sorted list:', array)
 
 def pancake(array):

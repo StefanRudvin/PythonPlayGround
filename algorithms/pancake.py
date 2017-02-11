@@ -20,8 +20,10 @@ if __name__ == '__main__':
 
     tutor = False
     data = list('12345')
+
     while data == sorted(data):
         random.shuffle(data)
     print('Original List: %r' % ' '.join(data))
     pancakesort(data)
+    data.reverse()
     print('Pancake Sorted List: %r' % ' '.join(data))
