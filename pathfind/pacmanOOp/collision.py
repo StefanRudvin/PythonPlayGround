@@ -22,4 +22,4 @@ class Collision():
         for i, (j, k) in enumerate(superPoints):
             if (playerPos[0], playerPos[1]) == (j, k):
                 del self.superPoints[i]
-                self.score += 1
+                self.score += 5
