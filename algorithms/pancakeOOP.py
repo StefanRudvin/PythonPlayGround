@@ -31,10 +31,15 @@ class Pancake():
         sorter = Sort()
         if len(array) == 1 and array[0] == "0":
             return False
+        #print("Final: ", array)
+        #(print(array[i]) for i in array)
+        for i in array:
+            sys.stdout.write(i)
+            sys.stdout.write(" ")
+        print("")
         for a, b in enumerate(array):
             array[a:] = sorter.engage(array[a:], a)
         print("0")
-        print("Final: ", array)
         return True
 
 
@@ -66,7 +71,8 @@ class Sort():
                 sys.stdout.write(str(maxIndex+cycle))
                 sys.stdout.write(" ")
                 array = self.flipbyn(array, 1)
-                sys.stdout.write("1 ")
+                sys.stdout.write(str(1+cycle))
+                sys.stdout.write(" ")
 
         return array
 
@@ -87,11 +93,17 @@ class Sort():
         return final
 
 def main():
+    inputArray = []
     while True:
         array = getuserinput()
+        if len(array) == 1 and array[0] == "0":
+            break
+        inputArray.append(array)
 
+
+    for line in inputArray:
         pancake = Pancake()
-        running = pancake.engage(array)
+        running = pancake.engage(line)
         if not running:
             break
 
