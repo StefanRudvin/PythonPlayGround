@@ -1,40 +1,121 @@
 # Turtlesort assignment
 
+'''
+
+2
+3
+Yertle
+Duke of Earl
+Sir Lancelot
+Duke of Earl
+Yertle
+Sir Lancelot
+9
+Yertle
+Duke of Earl
+Sir Lancelot
+Elizabeth Windsor
+Michael Eisner
+Richard M. Nixon
+Mr. Rogers
+Ford perfect
+Mack
+Yertle
+Richard M. Nixon
+Sir Lancelot
+Duke of Earl
+Elizabeth Windsor
+Michael Eisner
+Mr. Rogers
+Ford perfect
+Mack
+
+
+2
+3
+
+Yertle
+Duke of Earl
+Sir Lancelot
+
+Duke of Earl
+Yertle
+Sir Lancelot
+9
+
+Yertle
+Duke of Earl
+Sir Lancelot
+Elizabeth Windsor
+Michael Eisner
+Richard M. Nixon
+Mr. Rogers
+Ford perfect
+Mack
+
+Yertle
+Richard M. Nixon
+Sir Lancelot
+Duke of Earl
+Elizabeth Windsor
+Michael Eisner
+Mr. Rogers
+Ford perfect
+Mack
+
+Richard M. Nixon
+Sir Lancelot
+Yertle
+Duke of Earl
+Elizabeth Windsor
+Michael Eisner
+Mr. Rogers
+Ford perfect
+Mack
+
+
+
+
+'''
+
 global printables
-global final
 global moves
-final = []
 printables = []
 moves = []
 
 def main():
-    #printables.append("")
     global moves
-    global final
     start = False
     count = False
     while True:
 
         if start == False:
-            userInput = raw_input()
+            userInput = input()
             testCount = userInput
             testCount = int(testCount)
+            #print("Number of test counts:", testCount)
             start = True
         else:
             if testCount > 0:
-                arraylen = raw_input()
+                arraylen = input()
+                input()
+                #print("Number of turtles per stack:", arraylen)
+                #print("start geting arrays")
+                #print("Tests left",testCount)
                 sortedArray = []
                 inputArray = []
                 moves = []
 
                 for i in range(int(arraylen)):
-                    userInput = raw_input()
+                    userInput = input()
                     inputArray.append(userInput)
 
                 orig = inputArray
 
+                input()
+
                 for i in range(int(arraylen)):
-                    userInput = raw_input()
+                    userInput = input()
                     sortedArray.append(userInput)
 
                 #Arrays are set. Now do the maths and add to printables.
@@ -42,14 +123,12 @@ def main():
 
                 #Send moves for printing at end
                 for i in moves:
-                    printables.append(i)
+                    printables.append(orig[i])
                 printables.append("")
 
                 testCount -= 1
             else:
                 break
-    for i in printables:
-        print i
 
 # Moves n index of array to the top
 def move(ar, n):
@@ -65,33 +144,22 @@ def nthlargest(ar, n):
                     return a
 
 # Main
-def turtleSort(ar, index, z, inp):
+def turtleSort(ar, index):
     global moves
-    global final
     if index > 1:
         largest = nthlargest(ar, index)
         secondLargest = nthlargest(ar, index-1)
         if secondLargest > largest:
-            #moves.append(secondLargest)
-
-            #print ar[secondLargest]
-            #print("k:",z)
-            for a,b in enumerate(z):
-                #print b, ar[secondLargest]
-                if b == ar[secondLargest]:
-                    for j,k in enumerate(inp):
-                        if a == j:
-                            #print "move:",k
-                            moves.append(k)
-
+            #print("Moved number", ar[secondLargest], "@index", secondLargest)
+            moves.append(secondLargest)
             ar = move(ar, secondLargest)
             index -= 1
-            turtleSort(ar, index, z, inp)
+            turtleSort(ar, index)
         else:
             index -= 1
-            turtleSort(ar, index, z, inp)
+            turtleSort(ar, index)
     else:
-        #print ar
+
         return ar
 
 def sort(inputString, sortedString):
@@ -103,9 +171,9 @@ def sort(inputString, sortedString):
         for c,d in enumerate(sortedString):
             if b == d:
                 inputAr.append(c+1)
-    k = inputAr
-    turtleSort(inputAr, len(inputAr), k, inputString)
+    turtleSort(inputAr, len(inputAr))
 
-
-if __name__ == '__main__':
-    main()
+printables.append("")
+main()
+for i in printables:
+    print(i)
