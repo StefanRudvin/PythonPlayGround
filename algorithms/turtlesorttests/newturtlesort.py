@@ -11,6 +11,50 @@ Duke of Earl
 Yertle
 Sir Lancelot
 9
+Sir Lancelot
+Yertle
+Richard M. Nixon
+Duke of Earl
+Elizabeth Windsor
+Michael Eisner
+Mr. Rogers
+Ford perfect
+Mack
+Yertle
+Richard M. Nixon
+Sir Lancelot
+Duke of Earl
+Elizabeth Windsor
+Michael Eisner
+Mr. Rogers
+Ford perfect
+Mack
+
+
+
+
+
+
+
+
+
+
+
+3
+Yertle
+Duke of Earl
+Sir Lancelot
+Duke of Earl
+Yertle
+Sir Lancelot
+3
+Yertle
+Duke of Earl
+Sir Lancelot
+Duke of Earl
+Yertle
+Sir Lancelot
+9
 Yertle
 Duke of Earl
 Sir Lancelot
@@ -20,6 +64,7 @@ Richard M. Nixon
 Mr. Rogers
 Ford perfect
 Mack
+
 Yertle
 Richard M. Nixon
 Sir Lancelot

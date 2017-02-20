@@ -1,5 +1,3 @@
-# Turtlesort assignment
-
 global printables
 global final
 global moves
@@ -36,7 +34,6 @@ def main():
                     userInput = raw_input()
                     sortedArray.append(userInput)
 
-                #Arrays are set. Now do the maths and add to printables.
                 sort(inputArray, sortedArray)
 
                 #Send moves for printing at end
@@ -50,6 +47,29 @@ def main():
     for i in printables:
         print i
 
+# Main
+def turtleSort(ar, index, z, inp):
+    global moves
+    global final
+    if index > 1:
+        largest = nthlargest(ar, index)
+        secondLargest = nthlargest(ar, index-1)
+        if secondLargest > largest:
+            for a,b in enumerate(z):
+                if b == ar[secondLargest]:
+                    for j,k in enumerate(inp):
+                        if a == j:
+                            moves.append(k)
+
+            ar = move(ar, secondLargest)
+            index -= 1
+            turtleSort(ar, index, z, inp)
+        else:
+            index -= 1
+            turtleSort(ar, index, z, inp)
+    else:
+        return
+
 # Moves n index of array to the top
 def move(ar, n):
     return [ar[n]] + ar[:n] + ar[n+1:]
@@ -62,35 +82,6 @@ def nthlargest(ar, n):
             if j == n:
                 if b == n:
                     return a
-
-# Main
-def turtleSort(ar, index, z, inp):
-    global moves
-    global final
-    if index > 1:
-        largest = nthlargest(ar, index)
-        secondLargest = nthlargest(ar, index-1)
-        if secondLargest > largest:
-            #moves.append(secondLargest)
-
-            #print ar[secondLargest]
-            #print("k:",z)
-            for a,b in enumerate(z):
-                #print b, ar[secondLargest]
-                if b == ar[secondLargest]:
-                    for j,k in enumerate(inp):
-                        if a == j:
-                            #print "move:",k
-                            moves.append(k)
-
-            ar = move(ar, secondLargest)
-            index -= 1
-            turtleSort(ar, index, z, inp)
-        else:
-            index -= 1
-            turtleSort(ar, index, z, inp)
-    else:
-        return
 
 def sort(inputString, sortedString):
 
