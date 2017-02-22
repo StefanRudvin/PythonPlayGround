@@ -30,8 +30,6 @@ def main():
                     userInput = raw_input()
                     inputArray.append(userInput)
 
-                orig = inputArray
-
                 for i in range(int(arraylen)):
                     userInput = raw_input()
                     sortedArray.append(userInput)
@@ -71,16 +69,11 @@ def turtleSort(ar, index, z, inp):
         largest = nthlargest(ar, index)
         secondLargest = nthlargest(ar, index-1)
         if secondLargest > largest:
-            #moves.append(secondLargest)
 
-            #print ar[secondLargest]
-            #print("k:",z)
             for a,b in enumerate(z):
-                #print b, ar[secondLargest]
                 if b == ar[secondLargest]:
                     for j,k in enumerate(inp):
                         if a == j:
-                            #print "move:",k
                             moves.append(k)
 
             ar = move(ar, secondLargest)
