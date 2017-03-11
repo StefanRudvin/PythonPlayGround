@@ -1,3 +1,5 @@
+#Algorithms practical 6
+
 def main():
     printAr = []
     while True:
