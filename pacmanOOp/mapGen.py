@@ -19,7 +19,7 @@ class Map():
 
     def getLevel(self):
         assert os.path.exists(
-            self._filename), 'Can find the level file: %s' % (self._filename)
+            self._filename), 'Cant find the level file: %s' % (self._filename)
         mapFile = open(self._filename, 'r')
         content = mapFile.readlines() + ['\r\n']
         mapFile.close()
@@ -31,7 +31,6 @@ class Map():
             line = content[linenum].rstrip('\r\n')
 
             if line != '':
-                # This line is part of the map.
                 level.append(line)
 
         for x in range(len(level[0])):

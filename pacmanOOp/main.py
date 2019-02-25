@@ -8,19 +8,6 @@ from player import Player
 from ghost import Ghost
 from collision import Collision
 
-# Colours
-# Add colours here instead of __init__
-
-# Task list:
-'''
-- colours
-- key input
-- player class
-- ghost class
-- ai
-
-'''
-
 class Game:
 
     def __init__(self):
@@ -50,7 +37,7 @@ class Game:
         self.player = Player(self.playerPos, self.level.walls)
 
         # Initialize Ghost class
-        self.ghost1 = Ghost(self.playerPos, self.ghostPos[0], self.level.walls)
+        self.ghost1 = Ghost(self.ghostPos[0], self.level.walls)
 
         # Initialize Collision class
         self.collision = Collision()
@@ -67,8 +54,10 @@ class Game:
 
         self.playerPos = self.player.movePlayer()
 
+        self.ghostPos[0] = self.ghost1.moveGhost(self.playerPos, self.ghostPos[0])
+
         # Update collision class
-        self.collision.update(self.level.points, self.playerPos, self.level.superpoints)
+        self.collision.update(self.level.points, self.playerPos, self.level.superpoints, self.ghostPos)
 
         # Get variables
         self.score = self.collision.score

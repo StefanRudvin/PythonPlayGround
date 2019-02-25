@@ -4,26 +4,52 @@ from player import Player
 
 class Ghost(object):
 
-    """docstring for Ghost"""
-
-    def __init__(self, playerPos, ghostPos, walls):
+    def __init__(self, ghostPos, walls):    
         self.walls = walls
-        self.playerPos = playerPos
         self.ghostPos = ghostPos
+        self.nodes = self.makeNodes()
+        self.found = 0
+        self.visited = []
 
         print("Ghost class initialized.")
-        # print("Ghost initial position: ", self.ghostPos)
 
     def moveGhost(self, playerPos, ghostPos):
-        self.playerPos = playerPos
-        self.ghostPos = ghostPos
+        self.bruteforce(ghostPos, playerPos)
+
+        print(self.nodes)
+
+        return ghostPos
+
+    def bruteforce(self, ghostPos, playerPos):
+        if self.found < 600:
+            (a, b) = ghostPos
+            self.visited.append((a,b))
+            self.found += 1
+            if self.found > 5:
+                pass
+                del self.visited[0]
+            if (a, b) == playerPos:
+                self.found = 500
+            if (a + 1, b) in self.nodes and (a+1, b) not in self.visited:
+                self.bruteforce((a + 1, b), playerPos)
+            if (a - 1, b) in self.nodes and (a-1, b) not in self.visited:
+                self.bruteforce((a - 1, b), playerPos)
+            if (a, b + 1) in self.nodes and (a, b+1) not in self.visited:
+                self.bruteforce((a, b + 1), playerPos)
+            if (a, b - 1) in self.nodes and (a, b-1) not in self.visited:
+                self.bruteforce((a, b - 1), playerPos)
+
+
+
 
     def makeNodes(self):
-
-        # Witdth: 18
-        # Height: 20
-        pass
-        # Make nodes
+        # Witdth: 18 Height: 20
+        ar = []
+        for x in range(18):
+            for y in range(20):
+                if [x, y] not in self.walls:
+                    ar.append((x, y))
+        return ar
 
     # Heuristics function takes 2 tuples of inputs, finds the heuristic distance between them.
     def heuristic(a, b):

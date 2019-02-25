@@ -1,31 +1,29 @@
 # Selection sort algorithm
 import math
 
-#numbers = [31,192,4104,1,6,2,15,51,162]
-numbers = [5,4,3,2,1]
+numbers = [31,192,4104,1,6,2,15,51,162]
 
 def selectionsort(array):
     finalArray = []
+
     i = 0
     n = len(array)
-    while i < n:
+    for i in range(0, n):
         finalArray.append(swapminimum(array)[0])
         array.pop(0)
-        i += 1
     return finalArray
 
 
 def swapminimum(array):
-    i = 0
+    i        = 0
     minplace = 0
-    minimum = math.inf
+    minimum  = math.inf
 
-    while i < len(array):
+    for i in range(0, len(array)):
         x = array[i]
         if x < minimum:
             minimum = x
             minplace = i
-        i += 1
 
     array[minplace], array[0] = array[0], array[minplace]
 
