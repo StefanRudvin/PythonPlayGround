@@ -25,7 +25,7 @@ def start_timer():
         time.sleep(1)
 
 def click():
-    mouse.click(button)
+    mouse.click_list(button)
     time.sleep(delay)
     time.sleep(random.randint(0, random_delay) * 0.005)
 
