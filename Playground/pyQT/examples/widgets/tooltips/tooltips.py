@@ -162,7 +162,7 @@ class SortingBox(QWidget):
         for shapeItem in self.shapeItems:
             painter.translate(shapeItem.position())
             painter.setBrush(shapeItem.color())
-            painter.drawPath(shapeItem.path())
+            painter.draw_path(shapeItem.path())
             painter.translate(-shapeItem.position())
 
     def mousePressEvent(self, event):

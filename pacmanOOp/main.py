@@ -1,7 +1,7 @@
 import sys
 import pygame as pg
 from pygame.locals import *
-import mapGen
+import level
 import random
 from draw import Draw
 from player import Player
@@ -21,8 +21,8 @@ class Game:
     def on_init(self):
 
         # Initialize level. Level class contains walls, points and superpoints
-        self.level = mapGen.Map()
-        self.level.makeLevelVariables()
+        self.level = level.Map()
+        self.level.make_level_variables()
 
         # Initialize Draw class
         self.draw = Draw()
@@ -47,7 +47,7 @@ class Game:
            (event.type == KEYUP and event.key == K_ESCAPE):
             self._running = False
 
-        self.player.userInput(event)  # Make moveVert etc.
+        self.player.user_input(event)  # Make moveVert etc.
 
     def on_loop(self, events):
         # TODO: on loop events. Takes in pygame events.
@@ -67,11 +67,11 @@ class Game:
     def on_render(self):
         # Draw() class renders everything.
         self.draw.update(pg)
-        self.draw.drawWalls(self.level.walls)
-        self.draw.drawPoints(self.level.points)
-        self.draw.drawSuperPoints(self.level.superpoints)
-        self.draw.drawPlayer(self.playerPos)
-        self.draw.drawGhosts(self.ghostPos)
+        self.draw.draw_walls(self.level.walls)
+        self.draw.draw_points(self.level.points)
+        self.draw.draw_super_points(self.level.superpoints)
+        self.draw.draw_player(self.playerPos)
+        self.draw.draw_ghosts(self.ghostPos)
 
         pg.display.flip()
 

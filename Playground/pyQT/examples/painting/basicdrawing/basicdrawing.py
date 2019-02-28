@@ -133,13 +133,13 @@ class RenderArea(QWidget):
                 if self.shape == RenderArea.Line:
                     painter.drawLine(rect.bottomLeft(), rect.topRight())
                 elif self.shape == RenderArea.Points:
-                    painter.drawPoints(RenderArea.points)
+                    painter.draw_points(RenderArea.points)
                 elif self.shape == RenderArea.Polyline:
                     painter.drawPolyline(RenderArea.points)
                 elif self.shape == RenderArea.Polygon:
                     painter.drawPolygon(RenderArea.points)
                 elif self.shape == RenderArea.Rect:
-                    painter.drawRect(rect)
+                    painter.draw_rect(rect)
                 elif self.shape == RenderArea.RoundedRect:
                     painter.drawRoundedRect(rect, 25, 25, Qt.RelativeSize)
                 elif self.shape == RenderArea.Ellipse:
@@ -151,7 +151,7 @@ class RenderArea(QWidget):
                 elif self.shape == RenderArea.Pie:
                     painter.drawPie(rect, startAngle, arcLength)
                 elif self.shape == RenderArea.Path:
-                    painter.drawPath(path)
+                    painter.draw_path(path)
                 elif self.shape == RenderArea.Text:
                     painter.drawText(rect, Qt.AlignCenter,
                             "PyQt by\nRiverbank Computing")
@@ -162,7 +162,7 @@ class RenderArea(QWidget):
 
         painter.setPen(self.palette().dark().color())
         painter.setBrush(Qt.NoBrush)
-        painter.drawRect(QRect(0, 0, self.width() - 1, self.height() - 1))
+        painter.draw_rect(QRect(0, 0, self.width() - 1, self.height() - 1))
 
 
 IdRole = Qt.UserRole

@@ -2,12 +2,12 @@ import os
 
 
 class Map():
-    """This class opens Level.txt, creates an array out of it and variables for
+    """This class opens Level1.txt, creates an array out of it and variables for
     player, ghost, walls, points, superpoints. Also provides getter functions for
     each of the previous."""
 
     def __init__(self):
-        self._filename = "Level.txt"
+        self._filename = "Level1.txt"
         self.level = []
         self.playerPos = (0, 0)
         self.ghosts = []

@@ -113,7 +113,7 @@ class RenderArea(QWidget):
         painter.setPen(Qt.darkGreen)
         painter.setPen(Qt.DashLine)
         painter.setBrush(Qt.NoBrush)
-        painter.drawRect(0, 0, 100, 100)
+        painter.draw_rect(0, 0, 100, 100)
 
     def drawShape(self, painter):
         painter.fillPath(self.shape, Qt.blue)

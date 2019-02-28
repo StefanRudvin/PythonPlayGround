@@ -97,38 +97,38 @@ class Car(QGraphicsObject):
 
     def paint(self, painter, option, widget):
         painter.setBrush(Qt.gray)
-        painter.drawRect(-20, -58, 40, 2)       # Front axel
-        painter.drawRect(-20, 7, 40, 2)         # Rear axel
+        painter.draw_rect(-20, -58, 40, 2)       # Front axel
+        painter.draw_rect(-20, 7, 40, 2)         # Rear axel
 
         painter.setBrush(self.color)
-        painter.drawRect(-25, -79, 50, 10)      # Front wing
+        painter.draw_rect(-25, -79, 50, 10)      # Front wing
 
         painter.drawEllipse(-25, -48, 50, 20)   # Side pods
-        painter.drawRect(-25, -38, 50, 35)      # Side pods
-        painter.drawRect(-5, 9, 10, 10)         # Back pod
+        painter.draw_rect(-25, -38, 50, 35)      # Side pods
+        painter.draw_rect(-5, 9, 10, 10)         # Back pod
 
         painter.drawEllipse(-10, -81, 20, 100)  # Main body
 
-        painter.drawRect(-17, 19, 34, 15)       # Rear wing
+        painter.draw_rect(-17, 19, 34, 15)       # Rear wing
 
         painter.setBrush(Qt.black)
         painter.drawPie(-5, -51, 10, 15, 0, 180 * 16)
-        painter.drawRect(-5, -44, 10, 10)       # Cockpit
+        painter.draw_rect(-5, -44, 10, 10)       # Cockpit
 
         painter.save()
         painter.translate(-20, -58)
         painter.rotate(self.wheelsAngle)
-        painter.drawRect(-10, -7, 10, 15)       # Front left
+        painter.draw_rect(-10, -7, 10, 15)       # Front left
         painter.restore()
 
         painter.save()
         painter.translate(20, -58)
         painter.rotate(self.wheelsAngle)
-        painter.drawRect(0, -7, 10, 15)         # Front right
+        painter.draw_rect(0, -7, 10, 15)         # Front right
         painter.restore()
 
-        painter.drawRect(-30, 0, 12, 17)        # Rear left
-        painter.drawRect(19, 0, 12, 17)         # Rear right
+        painter.draw_rect(-30, 0, 12, 17)        # Rear left
+        painter.draw_rect(19, 0, 12, 17)         # Rear right
 
 
 class CarInterfaceAdaptor(QDBusAbstractAdaptor):

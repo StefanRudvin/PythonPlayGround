@@ -199,7 +199,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Icons")
         self.checkCurrentStyle()
-        self.otherRadioButton.click()
+        self.otherRadioButton.click_list()
 
         self.resize(self.minimumSizeHint())
 

@@ -314,7 +314,7 @@ class StickMan(QGraphicsObject):
             path.lineTo(self.posFor(15))
 
             painter.setPen(QPen(self.m_penColor, 5.0, Qt.SolidLine, Qt.RoundCap))
-            painter.drawPath(path)
+            painter.draw_path(path)
 
             n1, n2 = Bones[0]
             node1 = self.m_nodes[n1]

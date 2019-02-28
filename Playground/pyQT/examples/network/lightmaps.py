@@ -313,7 +313,7 @@ class LightMaps(QWidget):
                 mask.setCompositionMode(QPainter.CompositionMode_Source)
                 mask.setBrush(g)
                 mask.setPen(Qt.NoPen)
-                mask.drawRect(self.maskPixmap.rect())
+                mask.draw_rect(self.maskPixmap.rect())
                 mask.setBrush(QColor(Qt.transparent))
                 mask.drawEllipse(g.center(), ring, ring)
                 mask.end()
@@ -342,7 +342,7 @@ class LightMaps(QWidget):
             p.setClipping(False)
             p.drawPixmap(corner, self.maskPixmap)
             p.setPen(Qt.gray)
-            p.drawPath(clipPath)
+            p.draw_path(clipPath)
 
         if self.invert:
             p = QPainter(self)

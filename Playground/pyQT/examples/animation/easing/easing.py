@@ -190,13 +190,13 @@ class Window(QWidget):
             painter.setBrush(Qt.red)
             start = QPoint(yAxis,
                     xAxis - curveScale * curve.valueForProgress(0))
-            painter.drawRect(start.x() - 1, start.y() - 1, 3, 3)
+            painter.draw_rect(start.x() - 1, start.y() - 1, 3, 3)
 
             # End point.
             painter.setBrush(Qt.blue)
             end = QPoint(yAxis + curveScale,
                     xAxis - curveScale * curve.valueForProgress(1))
-            painter.drawRect(end.x() - 1, end.y() - 1, 3, 3)
+            painter.draw_rect(end.x() - 1, end.y() - 1, 3, 3)
 
             curvePath = QPainterPath()
             curvePath.moveTo(QPointF(start))

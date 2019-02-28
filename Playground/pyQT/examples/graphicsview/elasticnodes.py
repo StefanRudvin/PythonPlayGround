@@ -391,7 +391,7 @@ class GraphWidget(QGraphicsView):
         gradient.setColorAt(1, Qt.lightGray)
         painter.fillRect(rect.intersected(sceneRect), QBrush(gradient))
         painter.setBrush(Qt.NoBrush)
-        painter.drawRect(sceneRect)
+        painter.draw_rect(sceneRect)
 
         # Text.
         textRect = QRectF(sceneRect.left() + 4, sceneRect.top() + 4,

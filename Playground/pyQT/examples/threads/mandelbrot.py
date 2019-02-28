@@ -263,8 +263,8 @@ class MandelbrotWidget(QWidget):
 
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(0, 0, 0, 127))
-        painter.drawRect((self.width() - textWidth) / 2 - 5, 0, textWidth + 10,
-                metrics.lineSpacing() + 5)
+        painter.draw_rect((self.width() - textWidth) / 2 - 5, 0, textWidth + 10,
+                          metrics.lineSpacing() + 5)
         painter.setPen(Qt.white)
         painter.drawText((self.width() - textWidth) / 2,
                 metrics.leading() + metrics.ascent(), text)

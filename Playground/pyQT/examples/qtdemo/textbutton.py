@@ -119,7 +119,7 @@ class ButtonBackground(DemoItem):
             painter.setBrush(brush)
 
         if self.type == TextButton.PANEL:
-            painter.drawRect(0, 0, scaledRect.width(), scaledRect.height())
+            painter.draw_rect(0, 0, scaledRect.width(), scaledRect.height())
         else:
             painter.drawRoundedRect(0, 0, scaledRect.width(),
                     scaledRect.height(), 10, 90, Qt.RelativeSize)
@@ -172,7 +172,7 @@ class ButtonBackground(DemoItem):
 
             painter.setBrush(brush);
 
-        painter.drawRect(0, 0, scaledRect.width(), scaledRect.height())
+        painter.draw_rect(0, 0, scaledRect.width(), scaledRect.height())
 
         xOff = scaledRect.width() / 2
         yOff = scaledRect.height() / 2
@@ -185,7 +185,7 @@ class ButtonBackground(DemoItem):
         path.lineTo(xOff - (4 * sizex), yOff - (3 * sizey))
         path.lineTo(xOff + (4 * sizex), yOff - (3 * sizey))
         path.lineTo(xOff, yOff + (5 * sizey))
-        painter.drawPath(path)
+        painter.draw_path(path)
 
         return image
 

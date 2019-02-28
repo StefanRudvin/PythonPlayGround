@@ -82,7 +82,7 @@ class CustomProxy(QGraphicsProxyWidget):
             path.addRect(bottom)
             painter.setPen(Qt.NoPen)
             painter.setBrush(color)
-            painter.drawPath(path)
+            painter.draw_path(path)
         elif intersectsBottom:
             painter.fillRect(bottom, color)
         elif intersectsRight:

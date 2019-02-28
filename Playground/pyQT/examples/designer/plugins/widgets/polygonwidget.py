@@ -59,12 +59,12 @@ class PolygonWidget(QWidget):
         painter.begin(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(QBrush(QColor(192, 192, 255)))
-        painter.drawRect(event.rect())
+        painter.draw_rect(event.rect())
         
         painter.translate(self.width()/2.0, self.height()/2.0)
         painter.rotate(self._angle)
         painter.setBrush(QBrush(self.gradient))
-        painter.drawPath(self.path)
+        painter.draw_path(self.path)
         painter.end()
     
     def sizeHint(self):

@@ -185,7 +185,7 @@ class PuzzleWidget(QWidget):
         if self.highlightedRect.isValid():
             painter.setBrush(QColor("#ffcccc"))
             painter.setPen(Qt.NoPen)
-            painter.drawRect(self.highlightedRect.adjusted(0, 0, -1, -1))
+            painter.draw_rect(self.highlightedRect.adjusted(0, 0, -1, -1))
 
         for rect, pixmap in zip(self.pieceRects, self.piecePixmaps):
             painter.drawPixmap(rect, pixmap)

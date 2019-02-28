@@ -132,9 +132,9 @@ class CharacterWidget(QWidget):
         painter.setPen(Qt.gray)
         for row in range(beginRow, endRow + 1):
             for column in range(beginColumn, endColumn + 1):
-                painter.drawRect(column * self.squareSize,
-                        row * self.squareSize, self.squareSize,
-                        self.squareSize)
+                painter.draw_rect(column * self.squareSize,
+                                  row * self.squareSize, self.squareSize,
+                                  self.squareSize)
 
         fontMetrics = QFontMetrics(self.displayFont)
         painter.setPen(Qt.black)

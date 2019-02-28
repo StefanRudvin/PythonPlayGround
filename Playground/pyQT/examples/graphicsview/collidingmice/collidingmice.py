@@ -129,7 +129,7 @@ class Mouse(QGraphicsItem):
         path.cubicTo(5, 27, 5, 32, 0, 30)
         path.cubicTo(-5, 32, -5, 42, 0, 35)
         painter.setBrush(Qt.NoBrush)
-        painter.drawPath(path)
+        painter.draw_path(path)
 
     def timerEvent(self):
         # Don't move too far away.

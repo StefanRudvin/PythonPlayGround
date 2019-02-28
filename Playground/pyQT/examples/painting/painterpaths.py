@@ -103,7 +103,7 @@ class RenderArea(QWidget):
         gradient.setColorAt(0.0, self.fillColor1)
         gradient.setColorAt(1.0, self.fillColor2)
         painter.setBrush(QBrush(gradient))
-        painter.drawPath(self.path)
+        painter.draw_path(self.path)
 
 
 class Window(QWidget):
