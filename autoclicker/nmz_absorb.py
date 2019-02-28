@@ -50,13 +50,13 @@ class NmzAutoClicker():
 		randint = random.randint(0, 2)
 		self.cmouse.position = (location[0][0] + float(randint), location[0][1] + float(randint))
 		self.cmouse.click(Button.left, 1)
-		time.sleep(0.2)
+		time.sleep(0.4)
 
 	def click(self, location):
 		randint = random.randint(0, 2)
 		self.cmouse.position = (location[0] + float(randint), location[1] + float(randint))
 		self.cmouse.click(Button.left, 1)
-		time.sleep(0.2)
+		time.sleep(0.4)
 
 	def flick_pray(self):
 		print('Flicking prayer...')
@@ -70,6 +70,7 @@ class NmzAutoClicker():
 		location = self.rock_cake_location
 		self.cmouse.position = (location[0] + float(randint), location[1] + float(randint))
 		self.cmouse.click(Button.right, 1)
+		time.sleep(0.4)
 		self.click(self.rock_cake_location)
 		time.sleep(0.2)
 
@@ -78,7 +79,7 @@ class NmzAutoClicker():
 
 		for loc in self.absorption_pot_locations:
 			self.click(loc)
-			time.sleep(0.2)
+			time.sleep(0.4)
 
 	def sip_ranging_pot(self):
 		print('Sipping ranging potion...')
@@ -168,7 +169,7 @@ class NmzAutoClicker():
 		counter = 200
 		while counter > 0:
 			counter -= 1
-
+			time.sleep(0.2)
 			self.flick_pray()
 			self.eat_rock_cake()
 
@@ -182,10 +183,10 @@ class NmzAutoClicker():
 					self.ranging_pot_locations.pop(0)
 					print('Finished sipping one ranging potion.')
 
-				time.sleep(self.delay - 0.4 - 0.4 - 0.2 - len(self.absorption_pot_locations)*0.4)
+				time.sleep(self.delay - 0.2 - 0.8 - 1 - 0.4 - len(self.absorption_pot_locations)*0.4)
 
 			else:
-				time.sleep(self.delay - 0.4 - 0.4)
+				time.sleep(self.delay - 0.2 - 0.8 - 1)
 
 
 nmz = NmzAutoClicker()
