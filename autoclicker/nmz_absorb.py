@@ -88,8 +88,8 @@ class NmzAutoClicker:
 
 	def flick_pray(self):
 		print('Flicking prayer...')
-		print(self.prayer_flick_location)
 		self.click(self.prayer_flick_location)
+		time.sleep(0.2)
 		self.click(self.prayer_flick_location)
 
 	def eat_rock_cake(self):
@@ -203,10 +203,10 @@ class NmzAutoClicker:
 					self.ranging_pot_locations.pop(0)
 					print('Finished sipping one ranging potion.')
 
-				time.sleep(self.delay - 0.2 - 0.8 - 0.4 - len(self.absorption_pot_locations) * 0.4)
+				time.sleep(self.delay - 0.2 - 1.0 - 0.4 - len(self.absorption_pot_locations) * 0.4)
 
 			else:
-				time.sleep(self.delay - 0.2 - 0.8)
+				time.sleep(self.delay - 0.2 - 1.0)
 
 nmz = NmzAutoClicker()
 nmz.run()
