@@ -7,8 +7,8 @@ from pynput.keyboard import Listener, KeyCode
 from pynput import mouse
 import os
 
-class NmzAutoClicker():
 
+class NmzAutoClicker():
     delay = 80.0
     random_delay_const = 200
     random_delay = 0
@@ -56,7 +56,7 @@ class NmzAutoClicker():
             counter -= 1
             time.sleep(1)
 
-    def click(self,location):
+    def click(self, location):
         randint = random.randint(0, 2)
         self.cmouse.position = (location[0][0] + float(randint), location[0][1] + float(randint))
         self.cmouse.click_list(Button.left, 1)
@@ -85,7 +85,7 @@ class NmzAutoClicker():
     def setRangingPot(self, x, y, button, pressed):
         position = self.cmouse.position
         print('Ranging pot added at pos {0}'.format(
-        position))
+            position))
         self.ranging_pot_locations.append(position)
         return False
 
@@ -102,7 +102,7 @@ class NmzAutoClicker():
     def setPrayerPot(self, x, y, button, pressed):
         position = self.cmouse.position
         print('Prayer pot added at pos {0}'.format(
-        position))
+            position))
         self.prayer_pot_locations.append(position)
         return False
 
@@ -111,7 +111,7 @@ class NmzAutoClicker():
         print("Prayer to ranging pot ratio: {0}".format(pot_ratio))
         while len(self.prayer_pot_locations) != 0:
             self.sip_prayer_pot()
-            
+
             self.ranging_pot_counter += 1
 
             if self.ranging_pot_counter == pot_ratio:
@@ -135,6 +135,7 @@ class NmzAutoClicker():
                 time.sleep(self.delay + self.random_delay)
 
             self.delay_bool = not self.delay_bool
+
 
 nmz = NmzAutoClicker()
 nmz.run()

@@ -1,9 +1,8 @@
-import time
-import threading
 import random
-import pynput
+import time
+
+from pynput.keyboard import KeyCode
 from pynput.mouse import Button, Controller
-from pynput.keyboard import Listener, KeyCode
 
 delay = 1.0
 random_delay = 200
@@ -25,7 +24,7 @@ def start_timer():
         time.sleep(1)
 
 def click():
-    mouse.click_list(button)
+    mouse.click(button)
     time.sleep(delay)
     time.sleep(random.randint(0, random_delay) * 0.005)
 

@@ -1,212 +1,198 @@
-import time
-import threading
-import random
-import pynput
-from pynput.mouse import Button, Controller
-from pynput.keyboard import Listener, KeyCode
-from pynput import mouse
-import os
 import ast
+import os
+import random
+import time
 
+from framework.input.Keyboard import Keyboard
+from framework.input.Mouse import Mouse
+from framework.utils import set_location
+
+def get_int_time():
+    return int(time.time())
 
 class NmzAutoClicker:
+    use_current_mouse_pos = True
+    offscreen_mouse_pos = None
 
-	delay = 30.0
-	ranging_pot_locations = []
-	absorption_pot_locations = []
+    delay = 30.0
+    overload_locations = []
+    absorption_pot_locations = []
 
-	rock_cake_location = None
+    orb_location = None
+    prayer_flick_location = None
 
-	prayer_flick_location = None
+    overload_sip_count = 4
+    absorption_pot_sip_count = 4
 
-	ranging_pot_sip_count = 4
-	absorption_pot_sip_count = 4
+    keyboard = Keyboard()
+    mouse = Mouse()
 
+    last_overload_sip_time = None
+    last_pray_flick = None
 
-	ranging_pot_counter = 4
+    off_screen_locations = []
 
-	cmouse = Controller()
+    def run(self):
+        os.system('clear')
+        print('---                           ---')
+        print('--- Stefan\'s Nmz AutoClicker ---')
+        print('---                           ---')
 
-	def run(self):
-		os.system('clear')
-		print('---                           ---')
-		print('--- Stefan\'s Nmz AutoClicker ---')
-		print('---                           ---')
+        self.get_locations()
 
-		self.get_locations()
+        os.system('clear')
+        input("Enter Nmz now and place your character in the middle with autoretaliate on and rapid heal on quick prayer.")
+        os.system('clear')
+        print('---                           ---')
+        print('--- Stefan\'s Nmz AutoClicker ---')
+        print('---                           ---')
+        self.setup_loop()
+        self.click_loop()
+        print('Finished.')
 
-		os.system('clear')
-		input("Enter to start")
-		os.system('clear')
-		print('---                           ---')
-		print('--- Stefan\'s Nmz AutoClicker ---')
-		print('---                           ---')
-		self.click_loop()
-		print('Finished.')
+    def get_locations(self):
+        if not os.path.isfile('./nmz_absorb_locations.txt') or not input(
+                "Previous locations found - use them? (y)") == "y":
+            self.set_locations()
+            return
 
-	def get_locations(self):
-		if not os.path.isfile('./locations.txt') or not input("Previous locations found - use them? (y)") == "y":
-			self.set_locations()
-			return
+        file = open("./nmz_absorb_locations.txt", "r")
 
-		file = open("./locations.txt", "r")
+        self.overload_locations = list(ast.literal_eval(file.readline()))
+        self.absorption_pot_locations = list(ast.literal_eval(file.readline()))
+        self.prayer_flick_location = ast.literal_eval(file.readline())
+        self.orb_location = ast.literal_eval(file.readline())
+        self.off_screen_locations = list(ast.literal_eval(file.readline()))
 
-		self.ranging_pot_locations = list(ast.literal_eval(file.readline()))
-		self.absorption_pot_locations = list(ast.literal_eval(file.readline()))
-		self.prayer_flick_location = ast.literal_eval(file.readline())
+        print(self.overload_locations)
+        print(self.absorption_pot_locations)
+        print(self.prayer_flick_location)
+        print(self.orb_location)
 
-		print(self.ranging_pot_locations)
-		print(self.absorption_pot_locations)
-		print(self.prayer_flick_location)
+    def set_locations(self):
+        self.set_enhance_pot_locations()
+        os.system('clear')
+        self.set_absorption_pot_locations()
+        os.system('clear')
+        self.orb_location = set_location("Rock cake / Locator Orb ", self.mouse)
+        os.system('clear')
 
-	def set_locations(self):
-		self.set_range_pot_locations()
-		os.system('clear')
-		self.set_absorption_pot_locations()
-		os.system('clear')
-		self.set_prayer_flick_location()
-		os.system('clear')
+        self.prayer_flick_location = set_location("Quick prayer ", self.mouse)
+        # self.set_offscreen_locations()
 
-		with open("./locations.txt", "w") as f:
-			f.write(str(self.ranging_pot_locations))
-			f.write("\n")
-			f.write(str(self.absorption_pot_locations))
-			f.write("\n")
-			f.write(str(self.prayer_flick_location))
+        os.system('clear')
 
-	def click_list(self, location):
-		randint = random.randint(0, 2)
-		self.cmouse.position = (location[0][0] + float(randint), location[0][1] + float(randint))
-		self.cmouse.click(Button.left, 1)
-		time.sleep(0.4)
+        with open("./nmz_absorb_locations.txt", "w") as f:
+            f.write(str(self.overload_locations))
+            f.write("\n")
+            f.write(str(self.absorption_pot_locations))
+            f.write("\n")
+            f.write(str(self.prayer_flick_location))
+            f.write("\n")
+            f.write(str(self.orb_location))
+            f.write("\n")
+            f.write(str(self.off_screen_locations))
 
-	def click(self, location):
-		randint = random.randint(0, 2)
-		self.cmouse.position = (location[0] + float(randint), location[1] + float(randint))
-		self.cmouse.click(Button.left, 1)
-		time.sleep(0.4)
+    def set_offscreen_locations(self):
+        print('Setting offscreen locations')
 
-	def flick_pray(self):
-		print('Flicking prayer...')
-		self.click(self.prayer_flick_location)
-		time.sleep(0.2)
-		self.click(self.prayer_flick_location)
+        for i in range(0, 4):
+            print('Click offscreen location #{0}'.format(i))
+            time.sleep(0.1)
+            self.off_screen_locations.append(set_location(" offscreen location #" + str(i), self.mouse))
 
-	def eat_rock_cake(self):
-		print('Eating rock cake...')
-		location = self.rock_cake_location
-		self.cmouse.position = location
-		self.cmouse.click(Button.right, 1)
-		time.sleep(0.6)
-		self.cmouse.click(Button.left, 1)
-		time.sleep(0.6)
+    def flick_pray(self):
+        print('Flicking prayer...')
+        self.mouse.click(self.prayer_flick_location, 0.7)
+        self.mouse.click(self.prayer_flick_location, 0.7)
+        self.last_pray_flick = get_int_time()
 
-	def sip_absorption(self):
-		print('Sipping absorption potions...')
+    def use_locator_orb(self):
+        print('Using locator orb/rock cake...')
+        self.mouse.click(self.orb_location, 0.7)
 
-		for loc in self.absorption_pot_locations:
-			self.click(loc)
-			time.sleep(0.4)
+    def sip_absorptions(self):
+        print('Sipping absorption potions...')
 
-	def sip_ranging_pot(self):
-		if self.ranging_pot_locations:
-			print('Sipping ranging potion...')
-			self.click_list(self.ranging_pot_locations)
-			self.ranging_pot_sip_count -= 1
+        for loc in self.absorption_pot_locations:
+            self.mouse.click(loc, 0.7)
 
-	def set_range_pot_locations(self):
-		range_pot_count = int(input("Number of ranging potions: "))
+    def sip_overload_and_use_orb(self):
+        if self.overload_locations:
+            print('Sipping overload potion...')
+            self.mouse.click(self.overload_locations[len(self.overload_locations) - 1], 0.4)
+            self.last_overload_sip_time = get_int_time()
 
-		for i in range(0, range_pot_count):
-			print('Click range pot #{0}'.format(i))
+            self.overload_sip_count -= 1
+            if self.overload_sip_count == 0:
+                self.overload_locations.pop()
+                self.overload_sip_count = 4
 
-			with mouse.Listener(on_click=self.set_ranging_pot) as listener:
-				listener.join()
-			time.sleep(0.1)
+        time.sleep(7)
+        self.use_locator_orb()
+        self.use_locator_orb()
 
-	def set_rock_cake_location(self):
-		print('Click rock cake')
+    def set_enhance_pot_locations(self):
+        enhance_pot_count = int(input("Number of overload potions: "))
+        for i in range(0, enhance_pot_count):
+            self.overload_locations.append(set_location("Overload pot #" + str(i + 1), self.mouse))
 
-		with mouse.Listener(on_click=self.set_rock_cake) as listener:
-			listener.join()
-		time.sleep(0.1)
+    def set_absorption_pot_locations(self):
+        absorption_pot_count = int(input("Number of absorption potions: "))
+        for i in range(0, absorption_pot_count):
+            self.absorption_pot_locations.append(set_location("Absorption pot #" + str(i + 1), self.mouse))
 
-	def set_prayer_flick_location(self):
+    def setup_loop(self):
+        print("Starting Nmz run...")
+        self.offscreen_mouse_pos = self.mouse.get_pos()
+        self.sip_absorptions()
+        self.sip_overload_and_use_orb()
+        self.flick_pray()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        self.use_locator_orb()
+        time.sleep(1)
+        self.move_mouse_off_screen()
 
-		print('Click prayer flick')
+    def move_mouse_off_screen(self):
+        if self.use_current_mouse_pos:
+            self.mouse.move_mouse(self.offscreen_mouse_pos)
+        else:
+            self.mouse.move_mouse(self.off_screen_locations[random.randint(0, 3)])
 
-		with mouse.Listener(on_click=self.set_prayer_flick) as listener:
-			listener.join()
-		time.sleep(0.1)
+    def click_loop(self):
+        print("Starting loop...")
+        start_time = get_int_time()
+        overload_total_time = 306
+        regen_time = 62
+        run_time = 155 * 60
 
-	def set_prayer_flick(self, x, y, button, pressed):
-		position = self.cmouse.position
-		print('Prayerflick pot added at pos {0}'.format(
-			position))
-		self.prayer_flick_location = position
-		return False
+        while get_int_time() - start_time < run_time:
+            current_time = get_int_time()
+            move_offscreen = False
 
-	def set_rock_cake(self, x, y, button, pressed):
-		position = self.cmouse.position
-		print('Rock cake added at pos {0}'.format(
-			position))
-		self.rock_cake_location = position
-		return False
+            if current_time - self.last_overload_sip_time >= overload_total_time:
+                self.offscreen_mouse_pos = self.mouse.get_pos()
+                self.sip_overload_and_use_orb()
+                move_offscreen = True
+                self.sip_absorptions()
 
-	def set_ranging_pot(self, x, y, button, pressed):
-		position = self.cmouse.position
-		print('Ranging pot added at pos {0}'.format(
-			position))
-		self.ranging_pot_locations.append(position)
-		return False
+            if current_time - self.last_pray_flick >= regen_time and (current_time - self.last_overload_sip_time) <= (overload_total_time - 10):
+                self.offscreen_mouse_pos = self.mouse.get_pos()
+                self.flick_pray()
+                self.use_locator_orb()
 
-	def set_absorption_pot_locations(self):
-		absorption_pot_count = int(input("Number of absorption potions: "))
+                move_offscreen = True
 
-		for i in range(0, absorption_pot_count):
-			print('Click absorption pot #{0}'.format(i))
+            if move_offscreen:
+                self.move_mouse_off_screen()
 
-			with mouse.Listener(on_click=self.set_absorption_pot) as listener:
-				listener.join()
-			time.sleep(0.1)
-
-	def set_absorption_pot(self, x, y, button, pressed):
-		position = self.cmouse.position
-		print('absorption pot added at pos {0}'.format(
-			position))
-		self.absorption_pot_locations.append(position)
-		return False
-
-	def click_loop(self):
-
-		# Every 30s click rock cake and flick pray.
-
-		# Every now and then click all the other bullshit.
-		# All of it? Sure.
-		# Range pots? Idk man. whenever. Everyyy 5 min? sure. 5 * 5 * 4 = 100 minutes.
-		# 100 minutes at first.
-
-		ratio = 300 / 30
-		counter = 400
-		while counter > 0:
-			counter -= 1
-			time.sleep(0.2)
-			self.flick_pray()
-			# self.eat_rock_cake()
-
-			if counter % ratio == 0:
-				self.sip_ranging_pot()
-				self.sip_absorption()
-
-				if self.ranging_pot_sip_count == 0:
-					self.ranging_pot_sip_count = 4
-					self.ranging_pot_locations.pop(0)
-					print('Finished sipping one ranging potion.')
-
-				time.sleep(self.delay - 0.2 - 1.0 - 0.4 - len(self.absorption_pot_locations) * 0.4)
-
-			else:
-				time.sleep(self.delay - 0.2 - 1.0)
+            time.sleep(1)
 
 nmz = NmzAutoClicker()
 nmz.run()
